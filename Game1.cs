@@ -14,7 +14,10 @@ public class Game1 : Game
     private Vector2 _renderOffset = new(0, 0);
     private float _renderScale = Constants.InitialWindowWidth / Constants.RenderWidth; // initial window hieght / renderheight
 
-    private Texture2D pixel;
+    private Texture2D _pixel;
+    private SpriteFont _font;
+
+    private ushort _timer = 0;
 
     public Game1()
     {
@@ -41,8 +44,10 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        pixel = new(GraphicsDevice, 1, 1);
-        pixel.SetData(new Color[] { Color.White });
+        _pixel = new(GraphicsDevice, 1, 1);
+        _pixel.SetData(new Color[] { Color.White });
+
+        _font = Content.Load<SpriteFont>("SilkscreenFont");
     }
 
     protected override void Update(GameTime gameTime)
@@ -56,7 +61,7 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        DrawToRenderTarget();
+        DrawToRenderTarget(gameTime);
 
         Matrix renderTransform =
             Matrix.CreateScale(_renderScale) *
@@ -69,13 +74,14 @@ public class Game1 : Game
         base.Draw(gameTime);
     }
 
-    private void DrawToRenderTarget()
+    private void DrawToRenderTarget(GameTime gameTime)
     {
         GraphicsDevice.SetRenderTarget(_gameRenderTarget);
         GraphicsDevice.Clear(Color.AliceBlue);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _spriteBatch.Draw(pixel, new Rectangle(10, 10, 50, 50), Color.White);
+        _spriteBatch.Draw(_pixel, new Rectangle(10, 10, 50, 50), Color.White);
+        _spriteBatch.DrawString(_font, gameTime.TotalGameTime.Seconds.ToString(), new Vector2(40, 20), Color.Black);
         _spriteBatch.End();
 
         GraphicsDevice.SetRenderTarget(null);
