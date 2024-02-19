@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -9,6 +10,12 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
+    private RenderTarget2D _gameRenderTarget;
+    private Vector2 _renderOffset = new(0, 0);
+    private float _renderScale = Constants.InitialWindowWidth / Constants.RenderWidth; // initial window hieght / renderheight
+
+    private Texture2D pixel;
+
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -18,7 +25,14 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        // TODO: Add your initialization logic here
+        _graphics.PreferredBackBufferWidth = 600;
+        _graphics.PreferredBackBufferHeight = 800;
+        _graphics.ApplyChanges();
+
+        Window.AllowUserResizing = true;
+        Window.ClientSizeChanged += OnWindowClientChange;
+
+        _gameRenderTarget = new(GraphicsDevice, Constants.RenderWidth, Constants.RenderHeight);
 
         base.Initialize();
     }
@@ -27,16 +41,14 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // TODO: use this.Content to load your game content here
+        pixel = new(GraphicsDevice, 1, 1);
+        pixel.SetData(new Color[] { Color.White });
     }
 
     protected override void Update(GameTime gameTime)
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-
-        // TODO: Add your update logic here
-
         base.Update(gameTime);
     }
 
@@ -44,8 +56,47 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // TODO: Add your drawing code here
+        DrawToRenderTarget();
+
+        Matrix renderTransform =
+            Matrix.CreateScale(_renderScale) *
+            Matrix.CreateTranslation(_renderOffset.X, _renderOffset.Y, 0);
+
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp, transformMatrix: renderTransform);
+        _spriteBatch.Draw(_gameRenderTarget, Vector2.Zero, Color.White);
+        _spriteBatch.End();
 
         base.Draw(gameTime);
+    }
+
+    private void DrawToRenderTarget()
+    {
+        GraphicsDevice.SetRenderTarget(_gameRenderTarget);
+        GraphicsDevice.Clear(Color.AliceBlue);
+
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
+        _spriteBatch.Draw(pixel, new Rectangle(10, 10, 50, 50), Color.White);
+        _spriteBatch.End();
+
+        GraphicsDevice.SetRenderTarget(null);
+    }
+
+    private void OnWindowClientChange(object sender, EventArgs args)
+    {
+        float windowAspectRatio = (float)Window.ClientBounds.Width / Window.ClientBounds.Height;
+        if (windowAspectRatio < Constants.AspectRatio)
+        {
+            // Letterbox.
+            _renderScale = (float)Window.ClientBounds.Width / Constants.RenderWidth;
+            _renderOffset.Y = (Window.ClientBounds.Height - Constants.RenderHeight * _renderScale) / 2.0f;
+            _renderOffset.X = 0;
+        }
+        else
+        {
+            // Pillarbox.
+            _renderScale = (float)Window.ClientBounds.Height / Constants.RenderHeight;
+            _renderOffset.X = (Window.ClientBounds.Width - Constants.RenderWidth * _renderScale) / 2.0f;
+            _renderOffset.Y = 0;
+        }
     }
 }
