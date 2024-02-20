@@ -5,19 +5,21 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minesweeper;
 
-public class Game1 : Game
+public class MSGame : Game
 {
-    private GraphicsDeviceManager _graphics;
+    public event EventHandler<MouseEventArgs> RaiseMouseEvent;
+
+    public SpriteFont Font { get => _font; }
+    public Texture2D Pixel { get => _pixel; }
+
+    private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
 
     private Texture2D _pixel;
     private SpriteFont _font;
+    private Minefield _minefield;
 
-    private Cells _cells;
-
-    public event EventHandler<MouseEventArgs> RaiseMouseEvent;
-
-    public Game1()
+    public MSGame()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
@@ -26,13 +28,15 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
+        // NOTE: base.Initialize() calls Game.LoadContent(). Keep it at the beginning if you need resources
+        // to initialize other game objects.
+        base.Initialize();
+
         _graphics.PreferredBackBufferWidth = Constants.InitialWindowWidth;
         _graphics.PreferredBackBufferHeight = Constants.InitialWindowHeight;
         _graphics.ApplyChanges();
 
-        _cells = new(this, 9, 9);
-
-        base.Initialize();
+        _minefield = new(this, 9, 9);
     }
 
     protected override void LoadContent()
@@ -49,7 +53,6 @@ public class Game1 : Game
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
-
 
         var mouseState = Mouse.GetState();
         if (mouseState.LeftButton == ButtonState.Pressed)
@@ -74,50 +77,7 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-
-        // Draw cells.
-        for (var x = 0; x < _cells.Width; x++)
-        {
-            for (var y = 0; y < _cells.Height; y++)
-            {
-                bool isRevealed = _cells.IsRevealed(x, y);
-                Color cellColour = Constants.CellColours[_cells.ValueAt(x, y)];
-                Rectangle cellRect = new(Constants.CellSize * x,
-                                         Constants.CellSize * y,
-                                         Constants.CellSize,
-                                         Constants.CellSize);
-                if (!isRevealed)
-                {
-                    _spriteBatch.Draw(_pixel, cellRect, Color.White);
-                }
-                else
-                {
-
-                    _spriteBatch.Draw(_pixel, cellRect, cellColour);
-                    string cellValue = _cells.ValueAt(x, y).ToString();
-                    _spriteBatch.DrawString(_font,
-                                            cellValue,
-                                            new Vector2(cellRect.X + Constants.CellSize / 2,
-                                                        cellRect.Y + Constants.CellSize / 2),
-                                            Color.Black);
-                }
-            }
-        }
-
-        // Draw grid lines.
-        for (var x = 0; x < _cells.Width; x++)
-        {
-            _spriteBatch.Draw(_pixel,
-                              new Rectangle(x * Constants.CellSize, 0, 1, Constants.RenderHeight),
-                              Color.Black * 0.25f);
-        }
-
-        for (var y = 0; y < _cells.Height; y++)
-        {
-            _spriteBatch.Draw(_pixel,
-                              new Rectangle(0, y * Constants.CellSize, Constants.RenderWidth, 1),
-                              Color.Black * 0.25f);
-        }
+        _minefield.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
