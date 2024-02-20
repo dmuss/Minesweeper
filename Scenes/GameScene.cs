@@ -6,6 +6,7 @@ namespace Minesweeper;
 
 public class GameScene : BaseScene
 {
+    // TODO: Move mouse events to base class.
     protected event EventHandler<MouseEventArgs> SceneRaiseMouseEvent;
 
     private Minefield _mineField;

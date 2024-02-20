@@ -10,6 +10,7 @@ public class MainMenuScene : BaseScene
 
     public MainMenuScene(MSGame game)
     {
+        game.RaiseMouseEvent += HandleMouseEvent;
         _pixel = game.Pixel;
         _font = game.Font;
     }
@@ -21,5 +22,13 @@ public class MainMenuScene : BaseScene
         spriteBatch.Draw(_pixel, new Rectangle(100, 100, 400, 100), Color.White);
         spriteBatch.Draw(_pixel, new Rectangle(100, 300, 400, 100), Color.Blue);
         spriteBatch.Draw(_pixel, new Rectangle(100, 500, 400, 100), Color.Red);
+    }
+
+    protected override void OnChangeScene(SceneChangeArgs e) { base.OnChangeScene(e); }
+
+    private void HandleMouseEvent(object sender, MouseEventArgs args)
+    {
+        SceneChangeArgs e = new(SceneManager.Scenes.Game);
+        OnChangeScene(e);
     }
 }

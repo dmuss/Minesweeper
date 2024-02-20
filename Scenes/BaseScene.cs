@@ -6,7 +6,7 @@ namespace Minesweeper;
 
 public abstract class BaseScene : IScene
 {
-    protected event EventHandler<SceneChangeArgs> SceneChange;
+    public event EventHandler<SceneChangeArgs> ChangeScene;
 
     public bool IsCurrentScene { get; protected set; }
 
@@ -15,4 +15,6 @@ public abstract class BaseScene : IScene
 
     public virtual void Enter() { IsCurrentScene = true; }
     public virtual void Leave() { IsCurrentScene = false; }
+
+    protected virtual void OnChangeScene(SceneChangeArgs e) { ChangeScene?.Invoke(this, e); }
 }
