@@ -17,7 +17,7 @@ public class MSGame : Game
 
     private Texture2D _pixel;
     private SpriteFont _font;
-    private Minefield _minefield;
+    private SceneManager _sceneManager;
 
     public MSGame()
     {
@@ -36,7 +36,7 @@ public class MSGame : Game
         _graphics.PreferredBackBufferHeight = Constants.InitialWindowHeight;
         _graphics.ApplyChanges();
 
-        _minefield = new(this, 9, 9);
+        _sceneManager = new(this);
     }
 
     protected override void LoadContent()
@@ -54,6 +54,9 @@ public class MSGame : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
 
+        _sceneManager.Update(gameTime);
+
+        // TODO: Should the Scene store and raise input events? 
         var mouseState = Mouse.GetState();
         if (mouseState.LeftButton == ButtonState.Pressed)
         {
@@ -77,7 +80,7 @@ public class MSGame : Game
         GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _minefield.Draw(_spriteBatch);
+        _sceneManager.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
