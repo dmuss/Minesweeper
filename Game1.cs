@@ -92,6 +92,7 @@ public class Game1 : Game
                 }
                 else
                 {
+
                     _spriteBatch.Draw(_pixel, cellRect, cellColour);
                     string cellValue = _cells.ValueAt(x, y).ToString();
                     _spriteBatch.DrawString(_font,

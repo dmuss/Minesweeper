@@ -12,17 +12,6 @@ internal static class Constants
     public const byte CellSize = RenderWidth / 9;
 
     public const byte NumMines = 10;
-    public static readonly Point[] AdjacentPoints =
-    {
-        new(-1, 0),
-        new(-1, -1),
-        new(0, -1),
-        new(1, -1),
-        new(1, 0),
-        new(1, 1),
-        new(0, 1),
-        new(-1, 1),
-    };
     public static readonly Color[] CellColours =
     {
         Color.Gray,
