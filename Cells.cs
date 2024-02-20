@@ -7,24 +7,30 @@ namespace Minesweeper;
 internal class Cells
 {
     private class Cell
-{
-    public enum CellFlag { NotFlagged, Flag, Question };
-
-        public byte Value { get; set; } // 0-8, >=9 is mine
-    public bool IsRevealed { get; set; }
-    public CellFlag Flagged { get; set; }
-
-    public Cell()
     {
-        Value = 0;
-        IsRevealed = false;
-        Flagged = CellFlag.NotFlagged;
+        public enum CellFlag { NotFlagged, Flag, Question };
+
+        public int Value
+        {
+            get => _value;
+            set
+            {
+                _value = MathHelper.Clamp(value, 0, 9);
+            }
+        }
+        public bool IsRevealed { get; set; }
+        public CellFlag Flagged { get; set; }
+
+        private int _value;
+
+        public Cell()
+        {
+            Value = 0;
+            IsRevealed = true;
+            Flagged = CellFlag.NotFlagged;
+        }
     }
-}
 
-
-internal class Cells
-{
     private Cell[,] _cells;
 
     // TODO: Is there a more idiomatic way to do this then an empty init body?
@@ -40,6 +46,7 @@ internal class Cells
     }
 
     public bool IsRevealed(int x, int y) { return _cells[y, x].IsRevealed; }
+    public int ValueAt(int x, int y) { return _cells[y, x].Value; }
 
     private void HandleMouseEvent(object sender, MouseEventArgs args)
     {
@@ -55,6 +62,33 @@ internal class Cells
             for (int x = 0; x < width; x++)
             {
                 _cells[y, x] = new();
+            }
+        }
+
+        HashSet<Point> mines = new(Constants.NumMines);
+        while (mines.Count < 10)
+        {
+            var rand = new Random();
+            Point point = new(rand.Next(Constants.NumMines - 1), rand.Next(Constants.NumMines - 1));
+            if (!mines.Add(point)) { continue; }
+        }
+
+        foreach (var mine in mines)
+        {
+            _cells[mine.Y, mine.X].Value = 9;
+
+            foreach (var point in Constants.AdjacentPoints)
+            {
+                var neighbourX = mine.X + point.X;
+                var neighbourY = mine.Y + point.Y;
+
+                bool neighbourInXBounds = neighbourX >= 0 && neighbourX < Width;
+                bool neighbourinYBounds = neighbourY >= 0 && neighbourY < Height;
+
+                if (neighbourInXBounds && neighbourinYBounds)
+                {
+                    _cells[neighbourY, neighbourX].Value++;
+                }
             }
         }
     }

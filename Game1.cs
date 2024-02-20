@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -59,10 +59,10 @@ public class Game1 : Game
             bool clickInYBounds = mouseState.Y >= 0 && mouseState.X <= Constants.InitialWindowHeight;
             if (clickInXBounds && clickInYBounds)
             {
-            var gridX = (int)MathF.Floor(mouseState.X / Constants.CellSize);
-            var gridY = (int)MathF.Floor(mouseState.Y / Constants.CellSize);
-            MouseEventArgs eventArgs = new(new Point(gridX, gridY));
-            OnRaiseMouseEvent(eventArgs);
+                var gridX = (int)MathF.Floor(mouseState.X / Constants.CellSize);
+                var gridY = (int)MathF.Floor(mouseState.Y / Constants.CellSize);
+                MouseEventArgs eventArgs = new(new Point(gridX, gridY));
+                OnRaiseMouseEvent(eventArgs);
             }
         }
 
@@ -73,28 +73,33 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.Black);
 
-        _spriteBatch.Begin();
+        _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
 
         // Draw cells.
         for (var x = 0; x < _cells.Width; x++)
         {
             for (var y = 0; y < _cells.Height; y++)
             {
-                string cellLocation = x + "," + y;
+                bool isRevealed = _cells.IsRevealed(x, y);
+                Color cellColour = Constants.CellColours[_cells.ValueAt(x, y)];
                 Rectangle cellRect = new(Constants.CellSize * x,
                                          Constants.CellSize * y,
                                          Constants.CellSize,
                                          Constants.CellSize);
-                Color cellColour = Color.White;
-                if (!_cells.IsRevealed(x, y))
+                if (!isRevealed)
                 {
-                    cellColour = Color.Purple;
+                    _spriteBatch.Draw(_pixel, cellRect, Color.White);
                 }
-                _spriteBatch.Draw(_pixel, cellRect, cellColour);
-                _spriteBatch.DrawString(_font,
-                                        cellLocation,
-                                        new Vector2(cellRect.X, cellRect.Y),
-                                        Color.Black);
+                else
+                {
+                    _spriteBatch.Draw(_pixel, cellRect, cellColour);
+                    string cellValue = _cells.ValueAt(x, y).ToString();
+                    _spriteBatch.DrawString(_font,
+                                            cellValue,
+                                            new Vector2(cellRect.X + Constants.CellSize / 2,
+                                                        cellRect.Y + Constants.CellSize / 2),
+                                            Color.Black);
+                }
             }
         }
 
@@ -122,7 +127,6 @@ public class Game1 : Game
         // Make a temporary copy to avoid the possibility of a race condition if the last subscriber
         // unsubscribes immediately after the null check and before the event is raised.
         EventHandler<MouseEventArgs> raiseMouseEvent = RaiseMouseEvent;
-
         if (raiseMouseEvent != null) { raiseMouseEvent(this, args); }
     }
 }
