@@ -1,12 +1,16 @@
 using System;
+using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
 
-public class Cell
+internal class Cells
+{
+    private class Cell
 {
     public enum CellFlag { NotFlagged, Flag, Question };
 
-    public byte Value { get; set; } // 0-9, 9 is mine
+        public byte Value { get; set; } // 0-8, >=9 is mine
     public bool IsRevealed { get; set; }
     public CellFlag Flagged { get; set; }
 
@@ -23,19 +27,9 @@ internal class Cells
 {
     private Cell[,] _cells;
 
-    // TODO: Nullable get?
+    // TODO: Is there a more idiomatic way to do this then an empty init body?
     public int Width { get => _cells.GetLength(1); init { } }
     public int Height { get => _cells.GetLength(0); init { } }
-    public Cell[,] CellGrid { get => _cells; init { } }
-
-    private void HandleMouseEvent(object sender, MouseEventArgs args)
-    {
-        Console.WriteLine($"Received event with grid location: ({args.GridLocation.X}, {args.GridLocation.Y})");
-        var cell = _cells[args.GridLocation.Y, args.GridLocation.X];
-        cell.IsRevealed = true;
-
-        Console.WriteLine($"\tCell at grid is revealed: {cell.IsRevealed} || Has value: {cell.Value} || Flagged: {cell.Flagged}");
-    }
 
     public Cells(Game1 game, int width, int height)
     {
@@ -43,6 +37,14 @@ internal class Cells
         Height = height;
         InitCells(width, height);
         game.RaiseMouseEvent += HandleMouseEvent;
+    }
+
+    public bool IsRevealed(int x, int y) { return _cells[y, x].IsRevealed; }
+
+    private void HandleMouseEvent(object sender, MouseEventArgs args)
+    {
+        var cell = _cells[args.GridLocation.Y, args.GridLocation.X];
+        cell.IsRevealed = true;
     }
 
     private void InitCells(int width, int height)

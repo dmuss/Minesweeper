@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -47,18 +47,23 @@ public class Game1 : Game
 
     protected override void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
 
-        // TODO: Mouse clicks are not restricted to the game window, so this crashes the game w/ an out-of-index
-        // access if you click outside the window.
+
         var mouseState = Mouse.GetState();
         if (mouseState.LeftButton == ButtonState.Pressed)
         {
+            // TODO: Does Monogame provide a function for checking mouse clicks in bounds?
+            bool clickInXBounds = mouseState.X >= 0 && mouseState.X <= Constants.InitialWindowWidth;
+            bool clickInYBounds = mouseState.Y >= 0 && mouseState.X <= Constants.InitialWindowHeight;
+            if (clickInXBounds && clickInYBounds)
+            {
             var gridX = (int)MathF.Floor(mouseState.X / Constants.CellSize);
             var gridY = (int)MathF.Floor(mouseState.Y / Constants.CellSize);
             MouseEventArgs eventArgs = new(new Point(gridX, gridY));
             OnRaiseMouseEvent(eventArgs);
+            }
         }
 
         base.Update(gameTime);
@@ -69,31 +74,43 @@ public class Game1 : Game
         GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin();
+
         // Draw cells.
-        for (var y = 0; y < _cells.Height; y++)
+        for (var x = 0; x < _cells.Width; x++)
         {
-            for (var x = 0; x < _cells.Width; x++)
+            for (var y = 0; y < _cells.Height; y++)
             {
                 string cellLocation = x + "," + y;
-                Rectangle cellRect = new(Constants.CellSize * x, Constants.CellSize * y, Constants.CellSize, Constants.CellSize);
+                Rectangle cellRect = new(Constants.CellSize * x,
+                                         Constants.CellSize * y,
+                                         Constants.CellSize,
+                                         Constants.CellSize);
                 Color cellColour = Color.White;
-                if (!_cells.CellGrid[y, x].IsRevealed)
+                if (!_cells.IsRevealed(x, y))
                 {
                     cellColour = Color.Purple;
                 }
                 _spriteBatch.Draw(_pixel, cellRect, cellColour);
-                _spriteBatch.DrawString(_font, cellLocation, new Vector2(cellRect.X, cellRect.Y), Color.Black);
+                _spriteBatch.DrawString(_font,
+                                        cellLocation,
+                                        new Vector2(cellRect.X, cellRect.Y),
+                                        Color.Black);
             }
         }
 
         // Draw grid lines.
-        for (var y = 0; y < _cells.Height; y++)
-        {
-            _spriteBatch.Draw(_pixel, new Rectangle(0, y * Constants.CellSize, Constants.RenderWidth, 1), Color.Black * 0.25f);
-        }
         for (var x = 0; x < _cells.Width; x++)
         {
-            _spriteBatch.Draw(_pixel, new Rectangle(x * Constants.CellSize, 0, 1, Constants.RenderHeight), Color.Black * 0.25f);
+            _spriteBatch.Draw(_pixel,
+                              new Rectangle(x * Constants.CellSize, 0, 1, Constants.RenderHeight),
+                              Color.Black * 0.25f);
+        }
+
+        for (var y = 0; y < _cells.Height; y++)
+        {
+            _spriteBatch.Draw(_pixel,
+                              new Rectangle(0, y * Constants.CellSize, Constants.RenderWidth, 1),
+                              Color.Black * 0.25f);
         }
         _spriteBatch.End();
 
