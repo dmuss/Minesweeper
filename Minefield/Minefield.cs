@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,14 +25,15 @@ public partial class Minefield
     #endregion
 
     #region Constructors
-    public Minefield(MSGame game, int width, int height, ref EventHandler<MouseEventArgs> eventHandler)
+    // TODO: Passing in both the game and scene here feels inelegant.
+    public Minefield(MSGame game, BaseScene scene, int width, int height)
     {
         _grid = new(width, height/*TODO: pass difficulty from game*/);
 
         _pixel = game.Pixel;
         _font = game.Font;
 
-        eventHandler += HandleMouseEvent;
+        scene.MouseEvent += HandleMouseEvent;
     }
     #endregion
 
@@ -86,7 +86,6 @@ public partial class Minefield
 
     private void HandleMouseEvent(object sender, MouseEventArgs args)
     {
-        Console.WriteLine("Minefield received mouse event");
         // TODO: Click down changes to a "down" tile, release reveals.
         // TODO: Right click flags cell.
         _grid.RevealCell(args.GridLocation.X, args.GridLocation.Y);

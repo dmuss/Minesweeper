@@ -7,6 +7,7 @@ namespace Minesweeper;
 public abstract class BaseScene : IScene
 {
     public event EventHandler<SceneChangeArgs> ChangeScene;
+    public event EventHandler<MouseEventArgs> MouseEvent;
 
     public bool IsCurrentScene { get; protected set; }
 
@@ -17,4 +18,5 @@ public abstract class BaseScene : IScene
     public virtual void Leave() { IsCurrentScene = false; }
 
     protected virtual void OnChangeScene(SceneChangeArgs e) { ChangeScene?.Invoke(this, e); }
+    protected virtual void OnMouseEvent(object sender, MouseEventArgs e) { MouseEvent?.Invoke(this, e); }
 }

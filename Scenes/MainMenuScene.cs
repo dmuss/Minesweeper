@@ -28,7 +28,6 @@ public class MainMenuScene : BaseScene
 
     private void HandleMouseEvent(object sender, MouseEventArgs args)
     {
-        SceneChangeArgs e = new(SceneManager.Scenes.Game);
-        OnChangeScene(e);
+        OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.Game));
     }
 }

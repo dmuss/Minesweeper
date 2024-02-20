@@ -32,10 +32,7 @@ public class SceneManager
 
     public void Draw(SpriteBatch spriteBatch) { _currentScene.Draw(spriteBatch); }
 
-    private void HandleSceneChangeEvents(object sender, SceneChangeArgs e)
-    {
-        SwitchScene(e.Scene);
-    }
+    private void HandleSceneChangeEvents(object sender, SceneChangeArgs e) { SwitchScene(e.Scene); }
 
     private void SwitchScene(Scenes scene)
     {
