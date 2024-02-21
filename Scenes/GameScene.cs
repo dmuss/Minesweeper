@@ -9,17 +9,16 @@ public class GameScene : BaseScene
 
     public GameScene(in MSGame game)
     {
-        game.RaiseMouseEvent += OnMouseEvent;
-        _mineField = new(game, this, 9, 9);
+        game.RaiseMouseEvent += HandleMouseEvent;
+        _mineField = new(game, 9, 9);
     }
 
     public override void Update(GameTime gameTime) { return; }
 
     public override void Draw(SpriteBatch spriteBatch) { _mineField.Draw(spriteBatch); }
 
-    protected override void OnMouseEvent(object sender, MouseEventArgs e)
+    private void HandleMouseEvent(object sender, MouseEventArgs e)
     {
-        if (IsCurrentScene) { base.OnMouseEvent(sender, e); }
+        _mineField.RevealCell(e.GridLocation.X, e.GridLocation.Y);
     }
-
 }

@@ -8,12 +8,9 @@ public partial class Minefield
 {
     private class Grid
     {
-        #region Properties
         public int Width { get; init; }
         public int Height { get; init; }
-        #endregion
 
-        #region Fields
         private readonly Cell[,] _cells;
         private readonly Point[] _directions =
         {
@@ -26,9 +23,7 @@ public partial class Minefield
             new(1, 1),   // SE
             new(-1, 1),  // SW
         };
-        #endregion
 
-        #region Constructors
         public Grid(int width, int height)
         {
             Width = width;
@@ -45,9 +40,7 @@ public partial class Minefield
 
             CreateMinefield();
         }
-        #endregion
 
-        #region Methods
         public bool IsRevealed(int x, int y) { return _cells[y, x].IsRevealed; }
         public int ValueAt(int x, int y) { return _cells[y, x].Value; }
 
@@ -126,6 +119,5 @@ public partial class Minefield
         }
 
         private bool CoordsInBounds(int x, int y) { return (x >= 0 && x < Width) && (y >= 0 && y < Height); }
-        #endregion
     }
 }

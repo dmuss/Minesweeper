@@ -5,7 +5,6 @@ namespace Minesweeper;
 
 public partial class Minefield
 {
-    #region Fields
     private readonly Color[] _cellColours =
     {
         Color.Gray,
@@ -22,22 +21,18 @@ public partial class Minefield
     private readonly Grid _grid;
     private readonly Texture2D _pixel;
     private readonly SpriteFont _font;
-    #endregion
 
-    #region Constructors
-    // TODO: Passing in both the game and scene here feels inelegant.
-    public Minefield(MSGame game, BaseScene scene, int width, int height)
+    public Minefield(MSGame game, int width, int height)
     {
-        _grid = new(width, height/*TODO: pass difficulty from game*/);
+        // TODO: Game should have difficulty setting for creating Minefield.
+        _grid = new(width, height);
 
         _pixel = game.Pixel;
         _font = game.Font;
-
-        scene.MouseEvent += HandleMouseEvent;
     }
-    #endregion
 
-    #region Methods
+    public void RevealCell(int x, int y) { _grid.RevealCell(x, y); }
+
     public void Draw(SpriteBatch _spriteBatch)
     {
         // Draw cells.
@@ -83,12 +78,4 @@ public partial class Minefield
                               Color.Black * 0.25f);
         }
     }
-
-    private void HandleMouseEvent(object sender, MouseEventArgs args)
-    {
-        // TODO: Click down changes to a "down" tile, release reveals.
-        // TODO: Right click flags cell.
-        _grid.RevealCell(args.GridLocation.X, args.GridLocation.Y);
-    }
-    #endregion
 }

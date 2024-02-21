@@ -1,3 +1,2 @@
-﻿
-using var game = new Minesweeper.MSGame();
+﻿using var game = new Minesweeper.MSGame();
 game.Run();

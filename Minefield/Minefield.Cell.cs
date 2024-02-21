@@ -6,14 +6,11 @@ public partial class Minefield
 {
     private class Cell
     {
-        # region Nested
         public enum CellFlag { NotFlagged, Flag, Question };
-        #endregion
 
         public static int MineValue = 9;
         public static int NoAdjacentMine = 0;
 
-        # region Properties
         public int Value
         {
             get => _value;
@@ -23,13 +20,9 @@ public partial class Minefield
         public int Y { get; init; }
         public bool IsRevealed { get; set; }
         public CellFlag Flagged { get; set; }
-        #endregion
 
-        #region Fields
         private int _value;
-        #endregion
 
-        # region Constructors
         public Cell(int x, int y)
         {
             Value = 0;
@@ -38,6 +31,5 @@ public partial class Minefield
             IsRevealed = false;
             Flagged = CellFlag.NotFlagged;
         }
-        #endregion
     }
 }
