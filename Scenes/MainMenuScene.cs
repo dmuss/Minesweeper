@@ -8,14 +8,19 @@ public class MainMenuScene : BaseScene
     private Texture2D _pixel;
     private SpriteFont _font;
 
-    public MainMenuScene(MSGame game)
+    public MainMenuScene(in MSGame game) : base(game)
     {
-        game.RaiseMouseEvent += HandleMouseEvent;
         _pixel = game.Pixel;
         _font = game.Font;
     }
 
-    public override void Update(GameTime gameTime) { /* throw new System.NotImplementedException(); */ }
+    public override void Update(GameTime gameTime)
+    {
+        if (MouseInput.LeftClick)
+        {
+            OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.Game));
+        }
+    }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
@@ -25,9 +30,4 @@ public class MainMenuScene : BaseScene
     }
 
     protected override void OnChangeScene(SceneChangeArgs e) { base.OnChangeScene(e); }
-
-    private void HandleMouseEvent(object sender, MouseEventArgs args)
-    {
-        OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.Game));
-    }
 }
