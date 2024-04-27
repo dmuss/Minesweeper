@@ -9,7 +9,10 @@ public class GameOverScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
-        if (MSGame.MouseInput.LeftClick) { OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.MainMenu)); }
+        if (MSGame.MouseInput.LeftClick)
+        {
+            MSGame.SceneManager.SwitchScene(SceneManager.Scenes.MainMenu);
+        }
     }
 
     public override void Draw(SpriteBatch spriteBatch)

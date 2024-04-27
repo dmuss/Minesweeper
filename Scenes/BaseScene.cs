@@ -1,20 +1,14 @@
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Minesweeper;
 
-public abstract class BaseScene : IScene
+public abstract class BaseScene
 {
-    public event EventHandler<SceneChangeArgs>? ChangeScene;
-
     public bool IsCurrentScene { get; protected set; }
     public MSGame MSGame { get; protected set; }
 
-    public BaseScene(in MSGame game)
-    {
-        MSGame = game;
-    }
+    public BaseScene(in MSGame game) => MSGame = game;
 
     public abstract void Draw(SpriteBatch spriteBatch);
     public abstract void Update(GameTime gameTime);
@@ -34,6 +28,4 @@ public abstract class BaseScene : IScene
         IsCurrentScene = false;
         MSGame.MouseInput.Reset();
     }
-
-    protected virtual void OnChangeScene(SceneChangeArgs e) { ChangeScene?.Invoke(this, e); }
 }

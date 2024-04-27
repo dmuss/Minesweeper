@@ -21,7 +21,7 @@ public class GameScene : BaseScene
             {
                 if (MSGame.Minefield.RevealCell(mousePosition) == Cell.MineValue)
                 {
-                    OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.GameOver));
+                    MSGame.SceneManager.SwitchScene(SceneManager.Scenes.GameOver);
                 }
             }
         }
