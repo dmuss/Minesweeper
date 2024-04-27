@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -11,6 +10,8 @@ public class MouseInputManager
     public bool LeftDown { get => _leftButtonDown; }
     public bool RightClick { get => _rightButtonClick; }
     public bool RightDown { get => _rightButtonDown; }
+    public bool MiddleClick { get => _middleButtonClick; }
+    public bool MiddleDown { get => _middleButtonDown; }
 
     private MouseState _oldState;
     private MouseState _currentState;
@@ -21,6 +22,9 @@ public class MouseInputManager
     private bool _leftButtonClick;
     private bool _rightButtonDown;
     private bool _rightButtonClick;
+    private bool _middleButtonDown;
+    private bool _middleButtonClick;
+
 
     public void Update(Rectangle screenBounds)
     {
@@ -37,6 +41,12 @@ public class MouseInputManager
 
         _rightButtonClick =
             (_currentState.RightButton == ButtonState.Released && _oldState.RightButton == ButtonState.Pressed) &&
+            _inScreenBounds;
+
+        _middleButtonDown = (_currentState.MiddleButton == ButtonState.Pressed) && _inScreenBounds;
+
+        _middleButtonClick =
+            (_currentState.MiddleButton == ButtonState.Released && _oldState.MiddleButton == ButtonState.Pressed) &&
             _inScreenBounds;
 
         if (_inScreenBounds)

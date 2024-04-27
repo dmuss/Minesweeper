@@ -4,6 +4,9 @@ using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
 
+// TODO: Find a place for this.
+public enum Difficulty { Easy, Medium, Hard }
+
 public class Minefield
 {
     public int GridWidth { get; private set; }
@@ -37,32 +40,17 @@ public class Minefield
         Color.Yellow
     };
 
-    public Minefield(int minefieldWidth, int minefieldHeight)
+#pragma warning disable CS8618 // _cells initialised in function to allow for easy difficulty changes.
+    public Minefield(Difficulty difficulty = Difficulty.Easy)
     {
-        GridWidth = minefieldWidth;
-        GridHeight = minefieldHeight;
+        Reset(difficulty);
+    }
+#pragma warning restore CS8618
 
-        // Initialise cell grid.
-        _cells = new Cell[GridHeight, GridWidth];
-        for (int y = 0; y < GridHeight; y++)
-        {
-            for (int x = 0; x < GridWidth; x++)
-            {
-                _cells[y, x] = new Cell(x, y);
-            }
-        }
-
-        // Place mines.
-        HashSet<Point> mines = new(Constants.NumMines);
-        Random rand = new();
-
-        while (mines.Count < Constants.NumMines)
-        {
-            int xMax = GridWidth;
-            int yMax = GridHeight;
-            Point mineLocation = new(rand.Next(xMax), rand.Next(yMax));
-            if (mines.Add(mineLocation)) { SetMineAtPoint(mineLocation); }
-        }
+    public void Reset(Difficulty difficulty = Difficulty.Easy)
+    {
+        InitCellGrid(difficulty);
+        SetMines(difficulty);
     }
 
     public Cell? GetCellAtPoint(Point cellLocation)
@@ -80,8 +68,8 @@ public class Minefield
     public int? RevealCell(Point mousePosition)
     {
         Point cellLocation = new(
-            (int)MathF.Floor(mousePosition.X / Constants.CellSize),
-            (int)MathF.Floor(mousePosition.Y / Constants.CellSize));
+            (int)MathF.Floor(mousePosition.X / Cell.Size),
+            (int)MathF.Floor(mousePosition.Y / Cell.Size));
 
         if (GetCellAtPoint(cellLocation) is Cell cell)
         {
@@ -94,6 +82,78 @@ public class Minefield
         else
         {
             return null;
+        }
+    }
+
+    private void InitCellGrid(Difficulty difficulty)
+    {
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                {
+                    GridWidth = 9;
+                    GridHeight = 9;
+                    break;
+                }
+            case Difficulty.Medium:
+                {
+                    GridWidth = 16;
+                    GridHeight = 16;
+                    break;
+                }
+            case Difficulty.Hard:
+                {
+                    GridWidth = 30;
+                    GridHeight = 16;
+                    break;
+                }
+            default:
+                break;
+        }
+
+        _cells = new Cell[GridHeight, GridWidth];
+        for (int x = 0; x < GridWidth; x++)
+        {
+            for (int y = 0; y < GridHeight; y++)
+            {
+                _cells[y, x] = new Cell(x, y);
+            }
+        }
+    }
+
+    private void SetMines(Difficulty difficulty)
+    {
+        byte numMines = 0;
+        switch (difficulty)
+        {
+            case Difficulty.Easy:
+                {
+                    numMines = 10;
+                    break;
+                }
+            case Difficulty.Medium:
+                {
+                    numMines = 40;
+                    break;
+                }
+            case Difficulty.Hard:
+                {
+                    numMines = 99;
+                    break;
+                }
+            default:
+                break;
+        }
+
+        HashSet<Point> mines = new(numMines);
+        Random rand = new();
+
+        while (mines.Count < numMines)
+        {
+            int xMax = GridWidth;
+            int yMax = GridHeight;
+            Point mineLocation = new(rand.Next(xMax), rand.Next(yMax));
+            if (mines.Add(mineLocation)) { SetMineAtPoint(mineLocation); }
         }
     }
 
@@ -125,7 +185,6 @@ public class Minefield
     {
         HashSet<Cell> visited = new();
         RecurseFloodReveal(cellLocation, visited);
-
         RevealNeighboursOfVisitedCells(visited);
     }
 

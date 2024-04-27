@@ -9,11 +9,11 @@ public abstract class BaseScene : IScene
     public event EventHandler<SceneChangeArgs>? ChangeScene;
 
     public bool IsCurrentScene { get; protected set; }
-    public MouseInputManager MouseInput { get; protected set; }
+    public MSGame MSGame { get; protected set; }
 
     public BaseScene(in MSGame game)
     {
-        MouseInput = game.MouseInput;
+        MSGame = game;
     }
 
     public abstract void Draw(SpriteBatch spriteBatch);
@@ -21,14 +21,18 @@ public abstract class BaseScene : IScene
 
     public virtual void Enter()
     {
+        int requestedBufferWidth = Cell.Size * MSGame.Minefield.GridWidth;
+        int requestedBufferHeight = Cell.Size * MSGame.Minefield.GridHeight;
+        MSGame.SetBackBufferSize(requestedBufferWidth, requestedBufferHeight);
+
         IsCurrentScene = true;
-        MouseInput.Reset();
+        MSGame.MouseInput.Reset();
     }
 
     public virtual void Leave()
     {
         IsCurrentScene = false;
-        MouseInput.Reset();
+        MSGame.MouseInput.Reset();
     }
 
     protected virtual void OnChangeScene(SceneChangeArgs e) { ChangeScene?.Invoke(this, e); }

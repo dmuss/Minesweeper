@@ -6,6 +6,7 @@ public class Cell
 {
     public static byte MineValue { get; } = 9;
     public static byte NoAdjacentMineValue { get; } = 0;
+    public static byte Size { get; } = 50;
 
     public bool IsRevealed { get; set; } = false;
 
@@ -24,7 +25,7 @@ public class Cell
     public Cell(int x, int y)
     {
         Value = NoAdjacentMineValue;
-        Rect = new(Constants.CellSize * x, Constants.CellSize * y, Constants.CellSize, Constants.CellSize);
+        Rect = new(Size * x, Size * y, Size, Size);
         X = x;
         Y = y;
     }

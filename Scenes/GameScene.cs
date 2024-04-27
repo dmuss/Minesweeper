@@ -5,25 +5,21 @@ namespace Minesweeper;
 
 public class GameScene : BaseScene
 {
-    private readonly Minefield _mineField;
-    private readonly Texture2D _pixel;
-    private readonly SpriteFont _font;
+    public GameScene(in MSGame game) : base(game) { }
 
-    // TODO: Pass difficulty around while changing scenes.
-    public GameScene(in MSGame game) : base(game)
+    public override void Enter()
     {
-        _mineField = new(9, 9);
-        _pixel = game.Pixel;
-        _font = game.Font;
+        MSGame.Minefield.Reset(MSGame.Difficulty);
+        base.Enter();
     }
 
     public override void Update(GameTime gameTime)
     {
-        if (MouseInput.Position is Point mousePosition)
+        if (MSGame.MouseInput.Position is Point mousePosition)
         {
-            if (MouseInput.LeftClick)
+            if (MSGame.MouseInput.LeftClick)
             {
-                if (_mineField.RevealCell(mousePosition) == Cell.MineValue)
+                if (MSGame.Minefield.RevealCell(mousePosition) == Cell.MineValue)
                 {
                     OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.GameOver));
                 }
@@ -39,29 +35,28 @@ public class GameScene : BaseScene
 
     private void DrawCells(SpriteBatch spriteBatch)
     {
-        for (int x = 0; x < _mineField.GridWidth; x++)
+        for (int x = 0; x < MSGame.Minefield.GridWidth; x++)
         {
-            for (int y = 0; y < _mineField.GridHeight; y++)
+            for (int y = 0; y < MSGame.Minefield.GridHeight; y++)
             {
                 Point cellCoords = new(x, y);
 
-                if (_mineField.GetCellAtPoint(cellCoords) is Cell cell)
+                if (MSGame.Minefield.GetCellAtPoint(cellCoords) is Cell cell)
                 {
                     if (cell.IsRevealed)
                     {
+                        Color cellColour = MSGame.Minefield.CellColours[cell.Value];
 
-                        Color cellColour = _mineField.CellColours[cell.Value];
-
-                        spriteBatch.Draw(_pixel, cell.Rect, cellColour);
-                        spriteBatch.DrawString(_font,
+                        spriteBatch.Draw(MSGame.Pixel, cell.Rect, cellColour);
+                        spriteBatch.DrawString(MSGame.Font,
                                                cell.Value.ToString(),
-                                               new Vector2(cell.Rect.X + Constants.CellSize / 2,
-                                                           cell.Rect.Y + Constants.CellSize / 2),
+                                               new Vector2(cell.Rect.X + (Cell.Size / 2),
+                                                           cell.Rect.Y + (Cell.Size / 2)),
                                                Color.Black);
                     }
                     else
                     {
-                        spriteBatch.Draw(_pixel, cell.Rect, Color.White);
+                        spriteBatch.Draw(MSGame.Pixel, cell.Rect, Color.White);
                     }
                 }
             }
@@ -70,14 +65,24 @@ public class GameScene : BaseScene
 
     private void DrawGridLines(SpriteBatch spriteBatch)
     {
-        for (int x = 0; x < _mineField.GridWidth; x++)
+        for (int x = 0; x < MSGame.Minefield.GridWidth; x++)
         {
-            spriteBatch.Draw(_pixel, new Rectangle(x * Constants.CellSize, 0, 1, Constants.InitialWindowHeight), Color.Black * 0.25f);
+            spriteBatch.Draw(MSGame.Pixel,
+                             new Rectangle(x * Cell.Size,
+                                           0,
+                                           1,
+                                           MSGame.WindowHeight),
+                             Color.Black * 0.25f);
         }
 
-        for (int y = 0; y < _mineField.GridHeight; y++)
+        for (int y = 0; y < MSGame.Minefield.GridHeight; y++)
         {
-            spriteBatch.Draw(_pixel, new Rectangle(0, y * Constants.CellSize, Constants.InitialWindowWidth, 1), Color.Black * 0.25f);
+            spriteBatch.Draw(MSGame.Pixel,
+                             new Rectangle(0,
+                                           y * Cell.Size,
+                                           MSGame.WindowWidth,
+                                           1),
+                             Color.Black * 0.25f);
         }
 
     }
