@@ -43,7 +43,6 @@ public class MSGame : Game
     {
         base.Initialize();
 
-
         _mineField = new();
         SetBackBufferSize(_mineField.GridWidth * Cell.Size, _mineField.GridHeight * Cell.Size);
 

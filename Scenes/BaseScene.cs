@@ -5,10 +5,10 @@ namespace Minesweeper;
 
 public abstract class BaseScene
 {
-    public bool IsCurrentScene { get; protected set; }
-    public MSGame MSGame { get; protected set; }
+    protected bool IsCurrentScene { get; private set; }
+    protected MSGame MSGame { get; /*protected set;*/ }
 
-    public BaseScene(in MSGame game) => MSGame = game;
+    protected BaseScene(in MSGame game) => MSGame = game;
 
     public abstract void Draw(SpriteBatch spriteBatch);
     public abstract void Update(GameTime gameTime);

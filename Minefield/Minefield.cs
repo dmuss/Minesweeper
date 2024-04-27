@@ -14,6 +14,7 @@ public class Minefield
     public Color[] CellColours { get => _cellColours; }
 
     private Cell[,] _cells;
+    private byte _numMines = 0;
     private readonly Point[] _neighbours =
     {
         new(-1, 0),  // W
@@ -40,7 +41,7 @@ public class Minefield
         Color.Yellow
     };
 
-#pragma warning disable CS8618 // _cells initialised in function to allow for easy difficulty changes.
+#pragma warning disable CS8618 // _cells initialised in separate function to allow for easy difficulty changes.
     public Minefield(Difficulty difficulty = Difficulty.Easy)
     {
         Reset(difficulty);
@@ -123,32 +124,31 @@ public class Minefield
 
     private void SetMines(Difficulty difficulty)
     {
-        byte numMines = 0;
         switch (difficulty)
         {
             case Difficulty.Easy:
                 {
-                    numMines = 10;
+                    _numMines = 10;
                     break;
                 }
             case Difficulty.Medium:
                 {
-                    numMines = 40;
+                    _numMines = 40;
                     break;
                 }
             case Difficulty.Hard:
                 {
-                    numMines = 99;
+                    _numMines = 99;
                     break;
                 }
             default:
                 break;
         }
 
-        HashSet<Point> mines = new(numMines);
+        HashSet<Point> mines = new(_numMines);
         Random rand = new();
 
-        while (mines.Count < numMines)
+        while (mines.Count < _numMines)
         {
             int xMax = GridWidth;
             int yMax = GridHeight;
