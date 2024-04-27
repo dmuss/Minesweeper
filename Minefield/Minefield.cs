@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -5,6 +6,12 @@ namespace Minesweeper;
 
 public partial class Minefield
 {
+
+
+    private readonly CellGrid _cellGrid;
+    private readonly Texture2D _pixel;
+    private readonly SpriteFont _font;
+    // Indexed by cell values for drawing.
     private readonly Color[] _cellColours =
     {
         Color.Gray,
@@ -15,67 +22,79 @@ public partial class Minefield
         Color.Maroon,
         Color.Teal,
         Color.Purple,
-        Color.Black,
+        Color.Chartreuse,
         Color.Yellow
     };
-    private readonly Grid _grid;
-    private readonly Texture2D _pixel;
-    private readonly SpriteFont _font;
 
-    public Minefield(MSGame game, int width, int height)
+    public Minefield(in MSGame game, int minefieldWidth, int minefieldHeight)
     {
-        // TODO: Game should have difficulty setting for creating Minefield.
-        _grid = new(width, height);
+        _cellGrid = new CellGrid(minefieldWidth, minefieldHeight);
 
         _pixel = game.Pixel;
         _font = game.Font;
     }
 
-    public void RevealCell(int x, int y) { _grid.RevealCell(x, y); }
-
-    public void Draw(SpriteBatch _spriteBatch)
+    public void Update(MouseInputManager mouseInput)
     {
-        // Draw cells.
-        for (int x = 0; x < _grid.Width; x++)
+        if (mouseInput.Position is Point mouseScreenPos)
         {
-            for (int y = 0; y < _grid.Height; y++)
+            int mouseCellX = (int)MathF.Floor(mouseScreenPos.X / Constants.CellSize);
+            int mouseCellY = (int)MathF.Floor(mouseScreenPos.Y / Constants.CellSize);
+
+            if (mouseInput.LeftClick)
             {
-                bool isRevealed = _grid.IsRevealed(x, y);
-                Color cellColour = _cellColours[_grid.ValueAt(x, y)];
-                Rectangle cellRect = new(Constants.CellSize * x,
-                                         Constants.CellSize * y,
-                                         Constants.CellSize,
-                                         Constants.CellSize);
-                if (!isRevealed)
+                _cellGrid.RevealCell(new Point(mouseCellX, mouseCellY));
+            }
+        }
+    }
+
+    public void Draw(SpriteBatch spriteBatch)
+    {
+        DrawCells(spriteBatch);
+        DrawGridLines(spriteBatch);
+    }
+
+    private void DrawCells(SpriteBatch spriteBatch)
+    {
+        for (int x = 0; x < _cellGrid.Width; x++)
+        {
+            for (int y = 0; y < _cellGrid.Height; y++)
+            {
+                Point cellCoords = new Point(x, y);
+
+                if (_cellGrid.GetCellAtPoint(cellCoords) is Cell cell)
                 {
-                    _spriteBatch.Draw(_pixel, cellRect, Color.White);
-                }
-                else
-                {
-                    _spriteBatch.Draw(_pixel, cellRect, cellColour);
-                    string cellValue = _grid.ValueAt(x, y).ToString();
-                    _spriteBatch.DrawString(_font,
-                                            cellValue,
-                                            new Vector2(cellRect.X + Constants.CellSize / 2,
-                                                        cellRect.Y + Constants.CellSize / 2),
-                                            Color.Black);
+                    if (cell.IsRevealed)
+                    {
+                        Color cellColour = _cellColours[cell.Value];
+
+                        spriteBatch.Draw(_pixel, cell.Rect, cellColour);
+                        spriteBatch.DrawString(_font,
+                                               cell.Value.ToString(),
+                                               new Vector2(cell.Rect.X + Constants.CellSize / 2,
+                                                           cell.Rect.Y + Constants.CellSize / 2),
+                                               Color.Black);
+
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(_pixel, cell.Rect, Color.White);
+                    }
                 }
             }
         }
+    }
 
-        // Draw grid lines.
-        for (int x = 0; x < _grid.Width; x++)
+    private void DrawGridLines(SpriteBatch spriteBatch)
+    {
+        for (int x = 0; x < _cellGrid.Width; x++)
         {
-            _spriteBatch.Draw(_pixel,
-                              new Rectangle(x * Constants.CellSize, 0, 1, Constants.RenderHeight),
-                              Color.Black * 0.25f);
+            spriteBatch.Draw(_pixel, new Rectangle(x * Constants.CellSize, 0, 1, Constants.RenderHeight), Color.Black * 0.25f);
         }
 
-        for (int y = 0; y < _grid.Height; y++)
+        for (int y = 0; y < _cellGrid.Height; y++)
         {
-            _spriteBatch.Draw(_pixel,
-                              new Rectangle(0, y * Constants.CellSize, Constants.RenderWidth, 1),
-                              Color.Black * 0.25f);
+            spriteBatch.Draw(_pixel, new Rectangle(0, y * Constants.CellSize, Constants.RenderWidth, 1), Color.Black * 0.25f);
         }
     }
 }
