@@ -4,9 +4,10 @@ namespace Minesweeper;
 
 public class Cell
 {
-    public static byte MineValue { get; } = 9;
-    public static byte NoAdjacentMineValue { get; } = 0;
-    public static byte Size { get; } = 50;
+    public static int MineValue { get; } = 9;
+    public static int NoAdjacentMineValue { get; } = 0;
+    public static int Size { get; } = 50;
+    public static int HalfSize { get; } = Size / 2;
 
     public bool IsRevealed { get; set; } = false;
 

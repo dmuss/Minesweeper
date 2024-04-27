@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -19,9 +20,18 @@ public class GameScene : BaseScene
         {
             if (MSGame.MouseInput.LeftClick)
             {
+                // TODO: Likely behaviour for a win or lose is to reveal the board. Should there even be win/lose scenes or should it simply
+                // be a conditional check for whether the player's won on click to bring them back to the main menu to restart?
+                // Or could overlay a restart / difficulty buttons.
                 if (MSGame.Minefield.RevealCell(mousePosition) == Cell.MineValue)
                 {
                     MSGame.SceneManager.SwitchScene(SceneManager.Scenes.GameOver);
+                }
+
+                if (MSGame.Minefield.PlayerHasWon())
+                {
+                    Debug.WriteLine("Player wins!");
+                    // TODO: MSGame.SceneManager.SwitchScene(SceneManager.Scenes.Win); 
                 }
             }
         }
@@ -48,10 +58,14 @@ public class GameScene : BaseScene
                         Color cellColour = MSGame.Minefield.CellColours[cell.Value];
 
                         spriteBatch.Draw(MSGame.Pixel, cell.Rect, cellColour);
+
+                        string cellText = cell.Value.ToString();
+                        Vector2 halfTextSize = MSGame.Font.MeasureString(cellText) / 2;
+                        Vector2 cellCenter = new(cell.Rect.X + Cell.HalfSize, cell.Rect.Y + Cell.HalfSize);
+                        Vector2 textPosition = new(cellCenter.X - halfTextSize.X, cellCenter.Y - halfTextSize.Y);
                         spriteBatch.DrawString(MSGame.Font,
-                                               cell.Value.ToString(),
-                                               new Vector2(cell.Rect.X + (Cell.Size / 2),
-                                                           cell.Rect.Y + (Cell.Size / 2)),
+                                               cellText,
+                                               textPosition,
                                                Color.Black);
                     }
                     else

@@ -14,6 +14,8 @@ public class Minefield
     public Color[] CellColours { get => _cellColours; }
 
     private Cell[,] _cells;
+    private int _totalCells = 0;
+    private int _revealedCells = 0;
     private byte _numMines = 0;
     private readonly Point[] _neighbours =
     {
@@ -76,7 +78,14 @@ public class Minefield
         {
             cell.IsRevealed = true;
 
-            if (cell.Value == Cell.NoAdjacentMineValue) { FloodReveal(cellLocation); }
+            if (cell.Value == Cell.NoAdjacentMineValue)
+            {
+                FloodReveal(cellLocation);
+            }
+            else
+            {
+                _revealedCells++;
+            }
 
             return cell.Value;
         }
@@ -84,6 +93,17 @@ public class Minefield
         {
             return null;
         }
+    }
+
+    public bool PlayerHasWon()
+    {
+        // TODO: Check for flagged squares.
+        if (_revealedCells == _totalCells - _numMines)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     private void InitCellGrid(Difficulty difficulty)
@@ -120,6 +140,9 @@ public class Minefield
                 _cells[y, x] = new Cell(x, y);
             }
         }
+
+        _totalCells = GridWidth * GridHeight;
+        _revealedCells = 0;
     }
 
     private void SetMines(Difficulty difficulty)
@@ -196,6 +219,7 @@ public class Minefield
 
             cell.IsRevealed = true;
             visited.Add(cell);
+            _revealedCells++;
 
             foreach (Point dir in _neighbours)
             {
@@ -218,7 +242,11 @@ public class Minefield
             {
                 if (GetCellAtPoint(new Point(visitedCell.X + dir.X, visitedCell.Y + dir.Y)) is Cell neighbour)
                 {
-                    neighbour.IsRevealed = true;
+                    if (!visited.Contains(neighbour) && !neighbour.IsRevealed)
+                    {
+                        neighbour.IsRevealed = true;
+                        _revealedCells++;
+                    }
                 }
             }
         }
