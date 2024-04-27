@@ -1,17 +1,28 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Minesweeper;
 
-public partial class Minefield
+public class Minefield
 {
+    public int GridWidth { get; private set; }
+    public int GridHeight { get; private set; }
+    public Color[] CellColours { get => _cellColours; }
 
+    private Cell[,] _cells;
+    private readonly Point[] _neighbours =
+    {
+        new(-1, 0),  // W
+        new(0, -1),  // N
+        new(1, 0),   // E
+        new(0, 1),   // S
+        new(-1, -1), // NW
+        new(1, -1),  // NE
+        new(1, 1),   // SE
+        new(-1, 1),  // SW
+    };
 
-    private readonly CellGrid _cellGrid;
-    private readonly Texture2D _pixel;
-    private readonly SpriteFont _font;
-    // Indexed by cell values for drawing.
     private readonly Color[] _cellColours =
     {
         Color.Gray,
@@ -26,75 +37,131 @@ public partial class Minefield
         Color.Yellow
     };
 
-    public Minefield(in MSGame game, int minefieldWidth, int minefieldHeight)
+    public Minefield(int minefieldWidth, int minefieldHeight)
     {
-        _cellGrid = new CellGrid(minefieldWidth, minefieldHeight);
+        GridWidth = minefieldWidth;
+        GridHeight = minefieldHeight;
 
-        _pixel = game.Pixel;
-        _font = game.Font;
-    }
-
-    public void Update(MouseInputManager mouseInput)
-    {
-        if (mouseInput.Position is Point mouseScreenPos)
+        // Initialise cell grid.
+        _cells = new Cell[GridHeight, GridWidth];
+        for (int y = 0; y < GridHeight; y++)
         {
-            int mouseCellX = (int)MathF.Floor(mouseScreenPos.X / Constants.CellSize);
-            int mouseCellY = (int)MathF.Floor(mouseScreenPos.Y / Constants.CellSize);
-
-            if (mouseInput.LeftClick)
+            for (int x = 0; x < GridWidth; x++)
             {
-                _cellGrid.RevealCell(new Point(mouseCellX, mouseCellY));
+                _cells[y, x] = new Cell(x, y);
             }
+        }
+
+        // Place mines.
+        HashSet<Point> mines = new(Constants.NumMines);
+        Random rand = new();
+
+        while (mines.Count < Constants.NumMines)
+        {
+            int xMax = GridWidth;
+            int yMax = GridHeight;
+            Point mineLocation = new(rand.Next(xMax), rand.Next(yMax));
+            if (mines.Add(mineLocation)) { SetMineAtPoint(mineLocation); }
         }
     }
 
-    public void Draw(SpriteBatch spriteBatch)
+    public Cell? GetCellAtPoint(Point cellLocation)
     {
-        DrawCells(spriteBatch);
-        DrawGridLines(spriteBatch);
+        if (!PointInGridBounds(cellLocation))
+        {
+            return null;
+        }
+        else
+        {
+            return _cells[cellLocation.Y, cellLocation.X];
+        }
     }
 
-    private void DrawCells(SpriteBatch spriteBatch)
+    public int? RevealCell(Point mousePosition)
     {
-        for (int x = 0; x < _cellGrid.Width; x++)
+        Point cellLocation = new(
+            (int)MathF.Floor(mousePosition.X / Constants.CellSize),
+            (int)MathF.Floor(mousePosition.Y / Constants.CellSize));
+
+        if (GetCellAtPoint(cellLocation) is Cell cell)
         {
-            for (int y = 0; y < _cellGrid.Height; y++)
+            cell.IsRevealed = true;
+
+            if (cell.Value == Cell.NoAdjacentMineValue) { FloodReveal(cellLocation); }
+
+            return cell.Value;
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private bool PointInGridBounds(Point point)
+    {
+        return (point.X >= 0 && point.X < GridWidth) &&
+               (point.Y >= 0 && point.Y < GridHeight);
+    }
+
+    private void SetMineAtPoint(Point mineLocation)
+    {
+        if (GetCellAtPoint(mineLocation) is Cell cell)
+        {
+            cell.Value = Cell.MineValue;
+
+            foreach (Point dir in _neighbours)
             {
-                Point cellCoords = new Point(x, y);
+                Point neighbourCoords = new(mineLocation.X + dir.X, mineLocation.Y + dir.Y);
 
-                if (_cellGrid.GetCellAtPoint(cellCoords) is Cell cell)
+                if (GetCellAtPoint(neighbourCoords) is Cell neighbour)
                 {
-                    if (cell.IsRevealed)
-                    {
-                        Color cellColour = _cellColours[cell.Value];
-
-                        spriteBatch.Draw(_pixel, cell.Rect, cellColour);
-                        spriteBatch.DrawString(_font,
-                                               cell.Value.ToString(),
-                                               new Vector2(cell.Rect.X + Constants.CellSize / 2,
-                                                           cell.Rect.Y + Constants.CellSize / 2),
-                                               Color.Black);
-
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(_pixel, cell.Rect, Color.White);
-                    }
+                    neighbour.Value++;
                 }
             }
         }
     }
 
-    private void DrawGridLines(SpriteBatch spriteBatch)
+    private void FloodReveal(Point cellLocation)
     {
-        for (int x = 0; x < _cellGrid.Width; x++)
+        HashSet<Cell> visited = new();
+        RecurseFloodReveal(cellLocation, visited);
+
+        RevealNeighboursOfVisitedCells(visited);
+    }
+
+    private void RecurseFloodReveal(Point cellLocation, HashSet<Cell> visited)
+    {
+        if (GetCellAtPoint(cellLocation) is Cell cell)
         {
-            spriteBatch.Draw(_pixel, new Rectangle(x * Constants.CellSize, 0, 1, Constants.RenderHeight), Color.Black * 0.25f);
+            if (visited.Contains(cell) || cell.Value != Cell.NoAdjacentMineValue) { return; }
+
+            cell.IsRevealed = true;
+            visited.Add(cell);
+
+            foreach (Point dir in _neighbours)
+            {
+                Point neighbour = new(cellLocation.X + dir.X, cellLocation.Y + dir.Y);
+                RecurseFloodReveal(neighbour, visited);
+            }
+        }
+        else
+        {
+            return; // Out of bounds, return.
         }
 
-        for (int y = 0; y < _cellGrid.Height; y++)
+    }
+
+    private void RevealNeighboursOfVisitedCells(HashSet<Cell> visited)
+    {
+        foreach (Cell visitedCell in visited)
         {
-            spriteBatch.Draw(_pixel, new Rectangle(0, y * Constants.CellSize, Constants.RenderWidth, 1), Color.Black * 0.25f);
+            foreach (Point dir in _neighbours)
+            {
+                if (GetCellAtPoint(new Point(visitedCell.X + dir.X, visitedCell.Y + dir.Y)) is Cell neighbour)
+                {
+                    neighbour.IsRevealed = true;
+                }
+            }
         }
     }
 }

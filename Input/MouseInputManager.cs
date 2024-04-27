@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
@@ -8,6 +9,8 @@ public class MouseInputManager
     public Point? Position { get => _position; }
     public bool LeftClick { get => _leftButtonClick; }
     public bool LeftDown { get => _leftButtonDown; }
+    public bool RightClick { get => _rightButtonClick; }
+    public bool RightDown { get => _rightButtonDown; }
 
     private MouseState _oldState;
     private MouseState _currentState;
