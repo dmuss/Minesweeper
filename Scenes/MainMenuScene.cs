@@ -16,6 +16,7 @@ public class MainMenuScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
+        // TODO: Proper buttons and settings for difficulty, etc.
         if (MouseInput.LeftClick)
         {
             OnChangeScene(new SceneChangeArgs(SceneManager.Scenes.Game));

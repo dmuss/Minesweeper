@@ -4,11 +4,13 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minesweeper;
 
+#pragma warning disable CS8618 // Fields are not initialized in the Game constructor.
 public class MSGame : Game
 {
     public SpriteFont Font { get => _font; }
     public Texture2D Pixel { get => _pixel; }
     public MouseInputManager MouseInput { get => _mouseInput; }
+    public SceneManager SceneManager { get => _sceneManager; }
 
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
@@ -51,7 +53,7 @@ public class MSGame : Game
     {
         UpdateInput();
 
-        _sceneManager.Update(gameTime);
+        _sceneManager?.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -61,7 +63,7 @@ public class MSGame : Game
         GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _sceneManager.Draw(_spriteBatch);
+        _sceneManager?.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
@@ -75,3 +77,4 @@ public class MSGame : Game
         _mouseInput.Update(GraphicsDevice.Viewport.Bounds);
     }
 }
+#pragma warning restore CS8618

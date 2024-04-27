@@ -5,14 +5,15 @@ namespace Minesweeper;
 
 public class MouseInputManager
 {
-    public Point Position { get => _position; }
+    public Point? Position { get => _position; }
     public bool LeftClick { get => _leftButtonClick; }
+    public bool LeftDown { get => _leftButtonDown; }
 
     private MouseState _oldState;
     private MouseState _currentState;
     private bool _inScreenBounds;
 
-    private Point _position;
+    private Point? _position;
     private bool _leftButtonDown;
     private bool _leftButtonClick;
     private bool _rightButtonDown;
@@ -35,9 +36,13 @@ public class MouseInputManager
             (_currentState.RightButton == ButtonState.Released && _oldState.RightButton == ButtonState.Pressed) &&
             _inScreenBounds;
 
-        if (_leftButtonDown || _leftButtonClick || _rightButtonDown || _rightButtonClick)
+        if (_inScreenBounds)
         {
             _position = _currentState.Position;
+        }
+        else
+        {
+            _position = null;
         }
 
         _oldState = _currentState;
