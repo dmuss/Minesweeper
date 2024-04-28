@@ -9,9 +9,6 @@ public class Cell
     public static byte NoAdjacentMineValue { get; } = 0;
     public static byte MineValue { get; } = 9;
     public static byte RevealedMineValue { get; } = 10;
-    public static byte HiddenValue { get; } = 11;
-    public static byte FlaggedValue { get; } = 12;
-    public static byte QuestionValue { get; } = 13;
 
     public static byte Size { get; } = 50;
     public static byte HalfSize { get; } = (byte)(Size / 2);
@@ -41,5 +38,30 @@ public class Cell
     public void SetAsRevealedMine()
     {
         _value = RevealedMineValue;
+    }
+
+    public void ChangeFlagState()
+    {
+        switch (State)
+        {
+            case CellState.Hidden:
+                {
+                    State = CellState.Flagged;
+                    break;
+                }
+            case CellState.Flagged:
+                {
+                    State = CellState.Question;
+                    break;
+                }
+            case CellState.Question:
+                {
+                    State = CellState.Hidden;
+                    break;
+                }
+            case CellState.Revealed:
+            default:
+                break;
+        }
     }
 }

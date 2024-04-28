@@ -84,30 +84,7 @@ public class Minefield
             (int)MathF.Floor(mousePosition.X / Cell.Size),
             (int)MathF.Floor(mousePosition.Y / Cell.Size));
 
-        if (GetCellAtPoint(cellLocation) is Cell cell)
-        {
-            switch (cell.State)
-            {
-                case CellState.Hidden:
-                    {
-                        cell.State = CellState.Flagged;
-                        break;
-                    }
-                case CellState.Flagged:
-                    {
-                        cell.State = CellState.Question;
-                        break;
-                    }
-                case CellState.Question:
-                    {
-                        cell.State = CellState.Hidden;
-                        break;
-                    }
-                case CellState.Revealed:
-                default:
-                    break;
-            }
-        }
+        if (GetCellAtPoint(cellLocation) is Cell cell) { cell.ChangeFlagState(); }
     }
 
     public void RevealMines(Point mousePosition)
@@ -133,7 +110,6 @@ public class Minefield
                 }
             }
         }
-
     }
 
     private void InitCellGrid(Difficulty difficulty)

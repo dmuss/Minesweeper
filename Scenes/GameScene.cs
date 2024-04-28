@@ -1,4 +1,3 @@
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -28,7 +27,6 @@ public class GameScene : BaseScene
 
                 if (MSGame.Minefield.PlayerHasWon)
                 {
-                    Debug.WriteLine("Player wins!");
                     MSGame.Minefield.RevealMines(mousePosition);
                 }
             }
@@ -40,20 +38,17 @@ public class GameScene : BaseScene
         }
     }
 
-    public override void Draw(SpriteBatch spriteBatch) { DrawCells(spriteBatch); }
-
-    private void DrawCells(SpriteBatch spriteBatch)
+    public override void Draw(SpriteBatch spriteBatch)
     {
         for (int x = 0; x < MSGame.Minefield.GridWidth; x++)
         {
             for (int y = 0; y < MSGame.Minefield.GridHeight; y++)
             {
                 Point cellCoords = new(x, y);
-
                 if (MSGame.Minefield.GetCellAtPoint(cellCoords) is Cell cell)
                 {
-                    // If cell is revealed, it's value indexes the proper source rectangle for the sprite,
-                    // otherwise use the underlying integral value of the state to get the proper sprite.
+                    // If cell is revealed, its value indexes the proper source rectangle for the sprite,
+                    // otherwise use the underlying integral value of the state enum.
                     if (cell.State == CellState.Revealed)
                     {
                         spriteBatch.Draw(texture: MSGame.CellSheet,
