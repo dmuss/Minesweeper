@@ -4,6 +4,8 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minesweeper;
 
+public enum Difficulty { Easy, Medium, Hard }
+
 public class MSGame : Game
 {
     public SpriteFont Font { get => _font; }

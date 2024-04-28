@@ -4,19 +4,17 @@ using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
 
-// TODO: Find a place for this.
-public enum Difficulty { Easy, Medium, Hard }
-
 public class Minefield
 {
-    public int GridWidth { get; private set; }
-    public int GridHeight { get; private set; }
-    public Color[] CellColours { get => _cellColours; }
+    public byte GridWidth { get; private set; }
+    public byte GridHeight { get; private set; }
+    public bool PlayerHasWon { get => _playerHasWon; }
 
     private Cell[,] _cells;
-    private int _totalCells = 0;
-    private int _revealedCells = 0;
+    private ushort _totalCells = 0;
+    private ushort _revealedCells = 0;
     private byte _numMines = 0;
+    private bool _playerHasWon = false;
     private readonly Point[] _neighbours =
     {
         new(-1, 0),  // W
@@ -27,20 +25,6 @@ public class Minefield
         new(1, -1),  // NE
         new(1, 1),   // SE
         new(-1, 1),  // SW
-    };
-
-    private readonly Color[] _cellColours =
-    {
-        Color.Gray,
-        Color.Blue,
-        Color.Green,
-        Color.Red,
-        Color.Navy,
-        Color.Maroon,
-        Color.Teal,
-        Color.Purple,
-        Color.Chartreuse,
-        Color.Yellow
     };
 
 #pragma warning disable CS8618 // _cells initialised in separate function to allow for easy difficulty changes.
@@ -68,7 +52,7 @@ public class Minefield
         }
     }
 
-    public int? RevealCell(Point mousePosition)
+    public int? RevealCellAtPosition(Point mousePosition)
     {
         Point cellLocation = new(
             (int)MathF.Floor(mousePosition.X / Cell.Size),
@@ -76,16 +60,15 @@ public class Minefield
 
         if (GetCellAtPoint(cellLocation) is Cell cell)
         {
-            cell.IsRevealed = true;
+            cell.State = CellState.Revealed;
+            _revealedCells++;
 
             if (cell.Value == Cell.NoAdjacentMineValue)
             {
-                FloodReveal(cellLocation);
+                FloodReveal(cell);
             }
-            else
-            {
-                _revealedCells++;
-            }
+
+            if (_revealedCells == _totalCells - _numMines) { _playerHasWon = true; }
 
             return cell.Value;
         }
@@ -95,15 +78,36 @@ public class Minefield
         }
     }
 
-    public bool PlayerHasWon()
+    public void FlagCellAtPosition(Point mousePosition)
     {
-        // TODO: Check for flagged squares.
-        if (_revealedCells == _totalCells - _numMines)
-        {
-            return true;
-        }
+        Point cellLocation = new(
+            (int)MathF.Floor(mousePosition.X / Cell.Size),
+            (int)MathF.Floor(mousePosition.Y / Cell.Size));
 
-        return false;
+        if (GetCellAtPoint(cellLocation) is Cell cell)
+        {
+            switch (cell.State)
+            {
+                case CellState.Hidden:
+                    {
+                        cell.State = CellState.Flagged;
+                        break;
+                    }
+                case CellState.Flagged:
+                    {
+                        cell.State = CellState.Question;
+                        break;
+                    }
+                case CellState.Question:
+                    {
+                        cell.State = CellState.Hidden;
+                        break;
+                    }
+                case CellState.Revealed:
+                default:
+                    break;
+            }
+        }
     }
 
     private void InitCellGrid(Difficulty difficulty)
@@ -133,15 +137,15 @@ public class Minefield
         }
 
         _cells = new Cell[GridHeight, GridWidth];
-        for (int x = 0; x < GridWidth; x++)
+        for (byte x = 0; x < GridWidth; x++)
         {
-            for (int y = 0; y < GridHeight; y++)
+            for (byte y = 0; y < GridHeight; y++)
             {
                 _cells[y, x] = new Cell(x, y);
             }
         }
 
-        _totalCells = GridWidth * GridHeight;
+        _totalCells = (ushort)(GridWidth * GridHeight);
         _revealedCells = 0;
     }
 
@@ -204,34 +208,32 @@ public class Minefield
         }
     }
 
-    private void FloodReveal(Point cellLocation)
+    private void FloodReveal(Cell cell)
     {
         HashSet<Cell> visited = new();
-        RecurseFloodReveal(cellLocation, visited);
+        RecurseFloodReveal(cell, visited);
         RevealNeighboursOfVisitedCells(visited);
     }
 
-    private void RecurseFloodReveal(Point cellLocation, HashSet<Cell> visited)
+    private void RecurseFloodReveal(Cell cell, HashSet<Cell> visited)
     {
-        if (GetCellAtPoint(cellLocation) is Cell cell)
+        if (visited.Contains(cell) || cell.Value != Cell.NoAdjacentMineValue) { return; }
+
+        if (cell.State == CellState.Hidden)
         {
-            if (visited.Contains(cell) || cell.Value != Cell.NoAdjacentMineValue) { return; }
-
-            cell.IsRevealed = true;
-            visited.Add(cell);
+            cell.State = CellState.Revealed;
             _revealedCells++;
+        }
+        visited.Add(cell);
 
-            foreach (Point dir in _neighbours)
+        foreach (Point dir in _neighbours)
+        {
+            Point neighbourLocation = new(cell.X + dir.X, cell.Y + dir.Y);
+            if (GetCellAtPoint(neighbourLocation) is Cell neighbour)
             {
-                Point neighbour = new(cellLocation.X + dir.X, cellLocation.Y + dir.Y);
                 RecurseFloodReveal(neighbour, visited);
             }
         }
-        else
-        {
-            return; // Out of bounds, return.
-        }
-
     }
 
     private void RevealNeighboursOfVisitedCells(HashSet<Cell> visited)
@@ -240,11 +242,12 @@ public class Minefield
         {
             foreach (Point dir in _neighbours)
             {
-                if (GetCellAtPoint(new Point(visitedCell.X + dir.X, visitedCell.Y + dir.Y)) is Cell neighbour)
+                Point neighbourLocation = new(visitedCell.X + dir.X, visitedCell.Y + dir.Y);
+                if (GetCellAtPoint(neighbourLocation) is Cell neighbour)
                 {
-                    if (!visited.Contains(neighbour) && !neighbour.IsRevealed)
+                    if (!visited.Contains(neighbour) && neighbour.State == CellState.Hidden)
                     {
-                        neighbour.IsRevealed = true;
+                        neighbour.State = CellState.Revealed;
                         _revealedCells++;
                     }
                 }

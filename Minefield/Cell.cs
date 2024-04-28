@@ -2,17 +2,19 @@ using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
 
+public enum CellState { Hidden, Flagged, Question, Revealed }
+
 public class Cell
 {
-    public static int MineValue { get; } = 9;
-    public static int NoAdjacentMineValue { get; } = 0;
-    public static int Size { get; } = 50;
-    public static int HalfSize { get; } = Size / 2;
+    public static byte MineValue { get; } = 9;
+    public static byte NoAdjacentMineValue { get; } = 0;
+    public static byte Size { get; } = 50;
+    public static byte HalfSize { get; } = (byte)(Size / 2);
 
-    public bool IsRevealed { get; set; } = false;
+    public CellState State { get; set; } = CellState.Hidden;
 
-    public int X { get; init; }
-    public int Y { get; init; }
+    public byte X { get; init; }
+    public byte Y { get; init; }
     public Rectangle Rect { get; init; }
 
     public int Value
@@ -23,7 +25,7 @@ public class Cell
 
     private int _value;
 
-    public Cell(int x, int y)
+    public Cell(byte x, byte y)
     {
         Value = NoAdjacentMineValue;
         Rect = new(Size * x, Size * y, Size, Size);

@@ -6,6 +6,24 @@ namespace Minesweeper;
 
 public class GameScene : BaseScene
 {
+    // Indexed by cell value.
+    private readonly Color[] _cellColours =
+    {
+        Color.Gray,
+        Color.Blue,
+        Color.Green,
+        Color.Red,
+        Color.Navy,
+        Color.Maroon,
+        Color.Teal,
+        Color.Purple,
+        Color.Chartreuse,
+        Color.Yellow
+    };
+    private readonly Color _hiddenColour = Color.White;
+    private readonly Color _flaggedColour = Color.MistyRose;
+    private readonly Color _questionColour = Color.Aquamarine;
+
     public GameScene(in MSGame game) : base(game) { }
 
     public override void Enter()
@@ -23,16 +41,20 @@ public class GameScene : BaseScene
                 // TODO: Likely behaviour for a win or lose is to reveal the board. Should there even be win/lose scenes or should it simply
                 // be a conditional check for whether the player's won on click to bring them back to the main menu to restart?
                 // Or could overlay a restart / difficulty buttons.
-                if (MSGame.Minefield.RevealCell(mousePosition) == Cell.MineValue)
+                if (MSGame.Minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
                 {
                     MSGame.SceneManager.SwitchScene(SceneManager.Scenes.GameOver);
                 }
 
-                if (MSGame.Minefield.PlayerHasWon())
+                if (MSGame.Minefield.PlayerHasWon)
                 {
                     Debug.WriteLine("Player wins!");
-                    // TODO: MSGame.SceneManager.SwitchScene(SceneManager.Scenes.Win); 
                 }
+            }
+
+            if (MSGame.MouseInput.RightClick)
+            {
+                MSGame.Minefield.FlagCellAtPosition(mousePosition);
             }
         }
     }
@@ -53,24 +75,43 @@ public class GameScene : BaseScene
 
                 if (MSGame.Minefield.GetCellAtPoint(cellCoords) is Cell cell)
                 {
-                    if (cell.IsRevealed)
+                    switch (cell.State)
                     {
-                        Color cellColour = MSGame.Minefield.CellColours[cell.Value];
+                        case CellState.Hidden:
+                            {
+                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, _hiddenColour);
+                                break;
+                            }
+                        case CellState.Flagged:
+                            {
+                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, _flaggedColour);
+                                break;
+                            }
+                        case CellState.Question:
+                            {
+                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, _questionColour);
+                                break;
+                            }
+                        case CellState.Revealed:
+                            {
+                                Color cellColour = _cellColours[cell.Value];
 
-                        spriteBatch.Draw(MSGame.Pixel, cell.Rect, cellColour);
+                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, cellColour);
 
-                        string cellText = cell.Value.ToString();
-                        Vector2 halfTextSize = MSGame.Font.MeasureString(cellText) / 2;
-                        Vector2 cellCenter = new(cell.Rect.X + Cell.HalfSize, cell.Rect.Y + Cell.HalfSize);
-                        Vector2 textPosition = new(cellCenter.X - halfTextSize.X, cellCenter.Y - halfTextSize.Y);
-                        spriteBatch.DrawString(MSGame.Font,
-                                               cellText,
-                                               textPosition,
-                                               Color.Black);
-                    }
-                    else
-                    {
-                        spriteBatch.Draw(MSGame.Pixel, cell.Rect, Color.White);
+                                string cellText = cell.Value.ToString();
+                                Vector2 halfTextSize = MSGame.Font.MeasureString(cellText) / 2;
+                                Vector2 cellCenter = new(cell.Rect.X + Cell.HalfSize, cell.Rect.Y + Cell.HalfSize);
+                                Vector2 textPosition = new(cellCenter.X - halfTextSize.X, cellCenter.Y - halfTextSize.Y);
+
+                                spriteBatch.DrawString(MSGame.Font,
+                                                       cellText,
+                                                       textPosition,
+                                                       Color.Black);
+                                break;
+                            }
+                        default:
+                            break;
+
                     }
                 }
             }
