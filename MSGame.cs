@@ -7,14 +7,6 @@ namespace Minesweeper;
 
 public enum Difficulty { Easy, Medium, Hard }
 
-// Sprite indices for accessing sprite sheet source rectangles.
-public enum Sprite : byte
-{
-    Hidden = 11,
-    Flagged,
-    Question
-}
-
 public class MSGame : Game
 {
 

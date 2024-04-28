@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
@@ -117,10 +116,9 @@ public class Minefield
             (int)MathF.Floor(mousePosition.X / Cell.Size),
             (int)MathF.Floor(mousePosition.Y / Cell.Size));
 
-
         if (GetCellAtPoint(cellLocation) is Cell cell)
         {
-            cell.SetAsRevealedMine();
+            if (!PlayerHasWon) { cell.SetAsRevealedMine(); }
 
             // Reveal all other mines.
             for (byte x = 0; x < GridWidth; x++)

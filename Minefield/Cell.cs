@@ -2,7 +2,7 @@ using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
 
-public enum CellState { Hidden, Flagged, Question, Revealed }
+public enum CellState : byte { Revealed, Hidden = 11, Flagged, Question }
 
 public class Cell
 {

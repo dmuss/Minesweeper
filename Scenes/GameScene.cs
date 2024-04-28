@@ -20,18 +20,16 @@ public class GameScene : BaseScene
         {
             if (MSGame.MouseInput.LeftClick)
             {
-                // TODO: Likely behaviour for a win or lose is to reveal the board. Should there even be win/lose scenes or should it simply
-                // be a conditional check for whether the player's won on click to bring them back to the main menu to restart?
-                // Or could overlay a restart / difficulty buttons.
+                // TODO: Stop taking mouse input in minefield and provide reset options.
                 if (MSGame.Minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
                 {
                     MSGame.Minefield.RevealMines(mousePosition);
-                    //MSGame.SceneManager.SwitchScene(SceneManager.Scenes.GameOver);
                 }
 
                 if (MSGame.Minefield.PlayerHasWon)
                 {
                     Debug.WriteLine("Player wins!");
+                    MSGame.Minefield.RevealMines(mousePosition);
                 }
             }
 
@@ -54,44 +52,21 @@ public class GameScene : BaseScene
 
                 if (MSGame.Minefield.GetCellAtPoint(cellCoords) is Cell cell)
                 {
-                    switch (cell.State)
+                    // If cell is revealed, it's value indexes the proper source rectangle for the sprite,
+                    // otherwise use the underlying integral value of the state to get the proper sprite.
+                    if (cell.State == CellState.Revealed)
                     {
-                        case CellState.Hidden:
-                            {
-                                // TODO: texture indices should probalby not be stored in the cell which isn't concerned with drawing?
-                                spriteBatch.Draw(texture: MSGame.CellSheet,
-                                                 destinationRectangle: cell.Rect,
-                                                 sourceRectangle: MSGame.CellTextureRects[(int)Sprite.Hidden],
-                                                 color: Color.White);
-                                break;
-                            }
-                        case CellState.Flagged:
-                            {
-                                spriteBatch.Draw(texture: MSGame.CellSheet,
-                                                 destinationRectangle: cell.Rect,
-                                                 sourceRectangle: MSGame.CellTextureRects[Cell.FlaggedValue],
-                                                 color: Color.White);
-                                break;
-                            }
-                        case CellState.Question:
-                            {
-                                spriteBatch.Draw(texture: MSGame.CellSheet,
-                                                 destinationRectangle: cell.Rect,
-                                                 sourceRectangle: MSGame.CellTextureRects[Cell.QuestionValue],
-                                                 color: Color.White);
-                                break;
-                            }
-                        case CellState.Revealed:
-                            {
-                                spriteBatch.Draw(texture: MSGame.CellSheet,
-                                                 destinationRectangle: cell.Rect,
-                                                 sourceRectangle: MSGame.CellTextureRects[cell.Value],
-                                                 color: Color.White);
-                                break;
-                            }
-                        default:
-                            break;
-
+                        spriteBatch.Draw(texture: MSGame.CellSheet,
+                                         destinationRectangle: cell.Rect,
+                                         sourceRectangle: MSGame.CellTextureRects[cell.Value],
+                                         color: Color.White);
+                    }
+                    else
+                    {
+                        spriteBatch.Draw(texture: MSGame.CellSheet,
+                                         destinationRectangle: cell.Rect,
+                                         sourceRectangle: MSGame.CellTextureRects[(byte)cell.State],
+                                         color: Color.White);
                     }
                 }
             }
