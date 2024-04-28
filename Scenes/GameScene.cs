@@ -20,9 +20,6 @@ public class GameScene : BaseScene
         Color.Chartreuse,
         Color.Yellow
     };
-    private readonly Color _hiddenColour = Color.White;
-    private readonly Color _flaggedColour = Color.MistyRose;
-    private readonly Color _questionColour = Color.Aquamarine;
 
     public GameScene(in MSGame game) : base(game) { }
 
@@ -79,24 +76,24 @@ public class GameScene : BaseScene
                     {
                         case CellState.Hidden:
                             {
-                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, _hiddenColour);
+                                spriteBatch.Draw(MSGame.Textures["cell"], cell.Rect, Color.White);
                                 break;
                             }
                         case CellState.Flagged:
                             {
-                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, _flaggedColour);
+                                spriteBatch.Draw(MSGame.Textures["cellFlag"], cell.Rect, Color.White);
                                 break;
                             }
                         case CellState.Question:
                             {
-                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, _questionColour);
+                                spriteBatch.Draw(MSGame.Textures["cellQuestion"], cell.Rect, Color.White);
                                 break;
                             }
                         case CellState.Revealed:
                             {
                                 Color cellColour = _cellColours[cell.Value];
 
-                                spriteBatch.Draw(MSGame.Pixel, cell.Rect, cellColour);
+                                spriteBatch.Draw(MSGame.Textures["cellDown"], cell.Rect, cellColour);
 
                                 string cellText = cell.Value.ToString();
                                 Vector2 halfTextSize = MSGame.Font.MeasureString(cellText) / 2;

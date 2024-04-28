@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -10,6 +12,7 @@ public class MSGame : Game
 {
     public SpriteFont Font { get => _font; }
     public Texture2D Pixel { get => _pixel; }
+    public Dictionary<string, Texture2D> Textures { get => _textures; }
     public MouseInputManager MouseInput { get => _mouseInput; }
     public SceneManager SceneManager { get => _sceneManager; }
     public Minefield Minefield { get => _mineField; }
@@ -24,6 +27,8 @@ public class MSGame : Game
     private SceneManager _sceneManager;
     private MouseInputManager _mouseInput;
     private Minefield _mineField;
+
+    private Dictionary<string, Texture2D> _textures;
 
 #pragma warning disable CS8618 // Fields are not initialized in the Game constructor.
     public MSGame()
@@ -58,6 +63,15 @@ public class MSGame : Game
 
         _pixel = new(GraphicsDevice, 1, 1);
         _pixel.SetData(new Color[] { Color.White });
+
+        // TODO: Create single spritesheet and map source rectangles.
+        _textures = new()
+        {
+            { "cell", Content.Load<Texture2D>("Cell") },
+            { "cellDown", Content.Load<Texture2D>("CellDown") },
+            { "cellFlag", Content.Load<Texture2D>("CellFlag") },
+            { "cellQuestion", Content.Load<Texture2D>("CellQuestion") }
+        };
 
         _font = Content.Load<SpriteFont>("SilkscreenFont");
     }
