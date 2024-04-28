@@ -6,21 +6,6 @@ namespace Minesweeper;
 
 public class GameScene : BaseScene
 {
-    // Indexed by cell value.
-    private readonly Color[] _cellColours =
-    {
-        Color.Gray,
-        Color.Blue,
-        Color.Green,
-        Color.Red,
-        Color.Navy,
-        Color.Maroon,
-        Color.Teal,
-        Color.Purple,
-        Color.Chartreuse,
-        Color.Yellow
-    };
-
     public GameScene(in MSGame game) : base(game) { }
 
     public override void Enter()
@@ -40,7 +25,8 @@ public class GameScene : BaseScene
                 // Or could overlay a restart / difficulty buttons.
                 if (MSGame.Minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
                 {
-                    MSGame.SceneManager.SwitchScene(SceneManager.Scenes.GameOver);
+                    MSGame.Minefield.RevealMines(mousePosition);
+                    //MSGame.SceneManager.SwitchScene(SceneManager.Scenes.GameOver);
                 }
 
                 if (MSGame.Minefield.PlayerHasWon)
@@ -56,11 +42,7 @@ public class GameScene : BaseScene
         }
     }
 
-    public override void Draw(SpriteBatch spriteBatch)
-    {
-        DrawCells(spriteBatch);
-        DrawGridLines(spriteBatch);
-    }
+    public override void Draw(SpriteBatch spriteBatch) { DrawCells(spriteBatch); }
 
     private void DrawCells(SpriteBatch spriteBatch)
     {
@@ -76,34 +58,35 @@ public class GameScene : BaseScene
                     {
                         case CellState.Hidden:
                             {
-                                spriteBatch.Draw(MSGame.Textures["cell"], cell.Rect, Color.White);
+                                // TODO: texture indices should probalby not be stored in the cell which isn't concerned with drawing?
+                                spriteBatch.Draw(texture: MSGame.CellSheet,
+                                                 destinationRectangle: cell.Rect,
+                                                 sourceRectangle: MSGame.CellTextureRects[(int)Sprite.Hidden],
+                                                 color: Color.White);
                                 break;
                             }
                         case CellState.Flagged:
                             {
-                                spriteBatch.Draw(MSGame.Textures["cellFlag"], cell.Rect, Color.White);
+                                spriteBatch.Draw(texture: MSGame.CellSheet,
+                                                 destinationRectangle: cell.Rect,
+                                                 sourceRectangle: MSGame.CellTextureRects[Cell.FlaggedValue],
+                                                 color: Color.White);
                                 break;
                             }
                         case CellState.Question:
                             {
-                                spriteBatch.Draw(MSGame.Textures["cellQuestion"], cell.Rect, Color.White);
+                                spriteBatch.Draw(texture: MSGame.CellSheet,
+                                                 destinationRectangle: cell.Rect,
+                                                 sourceRectangle: MSGame.CellTextureRects[Cell.QuestionValue],
+                                                 color: Color.White);
                                 break;
                             }
                         case CellState.Revealed:
                             {
-                                Color cellColour = _cellColours[cell.Value];
-
-                                spriteBatch.Draw(MSGame.Textures["cellDown"], cell.Rect, cellColour);
-
-                                string cellText = cell.Value.ToString();
-                                Vector2 halfTextSize = MSGame.Font.MeasureString(cellText) / 2;
-                                Vector2 cellCenter = new(cell.Rect.X + Cell.HalfSize, cell.Rect.Y + Cell.HalfSize);
-                                Vector2 textPosition = new(cellCenter.X - halfTextSize.X, cellCenter.Y - halfTextSize.Y);
-
-                                spriteBatch.DrawString(MSGame.Font,
-                                                       cellText,
-                                                       textPosition,
-                                                       Color.Black);
+                                spriteBatch.Draw(texture: MSGame.CellSheet,
+                                                 destinationRectangle: cell.Rect,
+                                                 sourceRectangle: MSGame.CellTextureRects[cell.Value],
+                                                 color: Color.White);
                                 break;
                             }
                         default:
@@ -113,29 +96,5 @@ public class GameScene : BaseScene
                 }
             }
         }
-    }
-
-    private void DrawGridLines(SpriteBatch spriteBatch)
-    {
-        for (int x = 0; x < MSGame.Minefield.GridWidth; x++)
-        {
-            spriteBatch.Draw(MSGame.Pixel,
-                             new Rectangle(x * Cell.Size,
-                                           0,
-                                           1,
-                                           MSGame.WindowHeight),
-                             Color.Black * 0.25f);
-        }
-
-        for (int y = 0; y < MSGame.Minefield.GridHeight; y++)
-        {
-            spriteBatch.Draw(MSGame.Pixel,
-                             new Rectangle(0,
-                                           y * Cell.Size,
-                                           MSGame.WindowWidth,
-                                           1),
-                             Color.Black * 0.25f);
-        }
-
     }
 }

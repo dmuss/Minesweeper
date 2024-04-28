@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
@@ -108,6 +109,33 @@ public class Minefield
                     break;
             }
         }
+    }
+
+    public void RevealMines(Point mousePosition)
+    {
+        Point cellLocation = new(
+            (int)MathF.Floor(mousePosition.X / Cell.Size),
+            (int)MathF.Floor(mousePosition.Y / Cell.Size));
+
+
+        if (GetCellAtPoint(cellLocation) is Cell cell)
+        {
+            cell.SetAsRevealedMine();
+
+            // Reveal all other mines.
+            for (byte x = 0; x < GridWidth; x++)
+            {
+                for (byte y = 0; y < GridHeight; y++)
+                {
+                    Point cellSearch = new(x, y);
+                    if (GetCellAtPoint(cellSearch) is Cell validCell && validCell.Value == Cell.MineValue)
+                    {
+                        validCell.State = CellState.Revealed;
+                    }
+                }
+            }
+        }
+
     }
 
     private void InitCellGrid(Difficulty difficulty)
