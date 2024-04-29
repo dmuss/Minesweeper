@@ -38,6 +38,7 @@ public class MainMenuScene : BaseScene
     public override void Enter()
     {
         base.Enter();
+
         MSGame.SetBackBufferSize(_windowSize, _windowSize);
     }
 

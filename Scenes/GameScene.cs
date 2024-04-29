@@ -7,6 +7,7 @@ namespace Minesweeper;
 public class GameScene : BaseScene
 {
     private readonly List<Rectangle> _cellTextureRects;
+    private Minefield _minefield;
 
     public GameScene(in MSGame game) : base(game)
     {
@@ -20,12 +21,16 @@ public class GameScene : BaseScene
                 _cellTextureRects.Add(rect);
             }
         }
+
+        _minefield = new();
     }
 
     public override void Enter()
     {
-        MSGame.Minefield.Reset(MSGame.Difficulty);
         base.Enter();
+
+        _minefield.Reset(MSGame.Difficulty);
+        MSGame.SetBackBufferSize(_minefield.GridWidth * Cell.Size, _minefield.GridHeight * Cell.Size);
     }
 
     public override void Update(GameTime gameTime)
@@ -35,32 +40,27 @@ public class GameScene : BaseScene
             if (MSGame.MouseInput.LeftClick)
             {
                 // TODO: Game win/game over notice and reset options.
-                if (MSGame.Minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
+                if (_minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue || _minefield.PlayerHasWon)
                 {
-                    MSGame.Minefield.RevealMines(mousePosition);
-                }
-
-                if (MSGame.Minefield.PlayerHasWon)
-                {
-                    MSGame.Minefield.RevealMines(mousePosition);
+                    _minefield.RevealMines(mousePosition);
                 }
             }
 
             if (MSGame.MouseInput.RightClick)
             {
-                MSGame.Minefield.FlagCellAtPosition(mousePosition);
+                _minefield.FlagCellAtPosition(mousePosition);
             }
         }
     }
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        for (int x = 0; x < MSGame.Minefield.GridWidth; x++)
+        for (int x = 0; x < _minefield.GridWidth; x++)
         {
-            for (int y = 0; y < MSGame.Minefield.GridHeight; y++)
+            for (int y = 0; y < _minefield.GridHeight; y++)
             {
                 Point cellCoords = new(x, y);
-                if (MSGame.Minefield.GetCellAtPoint(cellCoords) is Cell cell)
+                if (_minefield.GetCellAtPoint(cellCoords) is Cell cell)
                 {
                     // If cell is revealed, its value indexes the proper source rectangle for the sprite,
                     // otherwise use the underlying integral value of the state enum.

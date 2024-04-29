@@ -15,10 +15,6 @@ public abstract class BaseScene
 
     public virtual void Enter()
     {
-        int requestedBufferWidth = Cell.Size * MSGame.Minefield.GridWidth;
-        int requestedBufferHeight = Cell.Size * MSGame.Minefield.GridHeight;
-        MSGame.SetBackBufferSize(requestedBufferWidth, requestedBufferHeight);
-
         IsCurrentScene = true;
         MSGame.MouseInput.Reset();
     }

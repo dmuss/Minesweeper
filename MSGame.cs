@@ -12,7 +12,6 @@ public class MSGame : Game
     public SpriteFont Font { get => _font; }
     public MouseInputManager MouseInput { get => _mouseInput; }
     public SceneManager SceneManager { get => _sceneManager; }
-    public Minefield Minefield { get => _mineField; }
     public Difficulty Difficulty { get; set; } = Difficulty.Easy;
     public int WindowWidth { get => _graphics.PreferredBackBufferWidth; }
     public int WindowHeight { get => _graphics.PreferredBackBufferHeight; }
@@ -23,7 +22,6 @@ public class MSGame : Game
     private SceneManager _sceneManager;
     private MouseInputManager _mouseInput;
 
-    private Minefield _mineField;
     private Texture2D _spriteSheet;
     private SpriteFont _font;
 
@@ -46,10 +44,6 @@ public class MSGame : Game
     protected override void Initialize()
     {
         base.Initialize();
-
-        _mineField = new();
-        SetBackBufferSize(_mineField.GridWidth * Cell.Size, _mineField.GridHeight * Cell.Size);
-
         _mouseInput = new();
         _sceneManager = new(this);
     }
