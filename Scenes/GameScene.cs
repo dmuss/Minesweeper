@@ -32,33 +32,42 @@ public class GameScene : BaseScene
 
     public override void Enter()
     {
-        base.Enter();
-
         _minefield.Reset(MSGame.Difficulty);
         MSGame.SetBackBufferSize(_minefield.GridWidth * Cell.Size, _minefield.GridHeight * Cell.Size);
+
+        base.Enter();
+    }
+
+    public override void Leave()
+    {
+        _playing = true;
+        _playerHasWon = false;
+
+        base.Leave();
     }
 
     public override void Update(GameTime gameTime)
     {
+        if (_playing)
+        {
 #if DEBUG
-        if (Keyboard.GetState().IsKeyDown(Keys.F12))
-        {
-            _minefield.Win();
-        }
+            if (Keyboard.GetState().IsKeyDown(Keys.F12))
+            {
+                _playerHasWon = true;
+                _playing = false;
+                _minefield.Reveal();
+            }
 #endif
+            // Check for win.
+            if (_minefield.RemainingCells == 0)
+            {
+                _playerHasWon = true;
+                _playing = false;
+                _minefield.RevealMines(null, _playerHasWon);
+            }
 
-        // Check for win.
-        if (_minefield.RemainingCells == 0)
-        {
-            _playerHasWon = true;
-            _playing = false;
-            _minefield.RevealMines(null, _playerHasWon);
-        }
-
-        // Update mouse input.
-        if (Mouse.Position is Point mousePosition)
-        {
-            if (_playing)
+            // Update mouse input.
+            if (Mouse.Position is Point mousePosition)
             {
                 if (Mouse.LeftClick)
                 {
@@ -73,6 +82,13 @@ public class GameScene : BaseScene
                 {
                     _minefield.FlagCellAtPosition(mousePosition);
                 }
+            }
+        }
+        else
+        {
+            if (Mouse.LeftClick)
+            {
+                MSGame.SceneManager.SwitchScene(SceneManager.Scenes.MainMenu);
             }
         }
     }

@@ -34,7 +34,7 @@ public class Minefield
 #pragma warning restore CS8618
 
 #if DEBUG
-    public void Win()
+    public void Reveal()
     {
         for (int y = 0; y < GridHeight; y++)
         {
