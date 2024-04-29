@@ -33,6 +33,26 @@ public class Minefield
     }
 #pragma warning restore CS8618
 
+#if DEBUG
+    public void Win()
+    {
+        for (int y = 0; y < GridHeight; y++)
+        {
+            for (int x = 0; x < GridWidth; x++)
+            {
+                if (GetCellAtPoint(new Point(x, y)) is Cell cell)
+                {
+                    if (cell.State != CellState.Revealed && cell.Value != Cell.MineValue)
+                    {
+                        cell.State = CellState.Revealed;
+                        _revealedCells++;
+                    }
+                }
+            }
+        }
+    }
+#endif
+
     public void Reset(Difficulty difficulty = Difficulty.Easy)
     {
         InitCellGrid(difficulty);
@@ -87,16 +107,16 @@ public class Minefield
     public void RevealMines(Point? mousePosition, bool playerHasWon)
     {
         // Reveal all mines.
-            for (byte x = 0; x < GridWidth; x++)
+        for (byte x = 0; x < GridWidth; x++)
+        {
+            for (byte y = 0; y < GridHeight; y++)
             {
-                for (byte y = 0; y < GridHeight; y++)
+                Point cellSearch = new(x, y);
+                if (GetCellAtPoint(cellSearch) is Cell validCell && validCell.Value == Cell.MineValue)
                 {
-                    Point cellSearch = new(x, y);
-                    if (GetCellAtPoint(cellSearch) is Cell validCell && validCell.Value == Cell.MineValue)
-                    {
-                        validCell.State = CellState.Revealed;
-                    }
+                    validCell.State = CellState.Revealed;
                 }
+            }
         }
 
         // If mouse position provided, highlight cell with clicked mine.

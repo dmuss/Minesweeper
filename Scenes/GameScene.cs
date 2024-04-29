@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+#if DEBUG
+using Microsoft.Xna.Framework.Input;
+#endif
 
 namespace Minesweeper;
 
@@ -37,6 +40,12 @@ public class GameScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
+#if DEBUG
+        if (Keyboard.GetState().IsKeyDown(Keys.F12))
+        {
+            _minefield.Win();
+        }
+#endif
 
         // Check for win.
         if (_minefield.RemainingCells == 0)
