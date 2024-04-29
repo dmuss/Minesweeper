@@ -6,15 +6,14 @@ namespace Minesweeper;
 
 public class Minefield
 {
-    public byte GridWidth { get; private set; }
-    public byte GridHeight { get; private set; }
-    public bool PlayerHasWon { get => _playerHasWon; }
+    public int GridWidth { get; private set; }
+    public int GridHeight { get; private set; }
+    public int RemainingCells { get => _totalCells - _numMines - _revealedCells; }
 
     private Cell[,] _cells;
-    private ushort _totalCells = 0;
-    private ushort _revealedCells = 0;
-    private byte _numMines = 0;
-    private bool _playerHasWon = false;
+    private int _totalCells = 0;
+    private int _revealedCells = 0;
+    private int _numMines = 0;
     private readonly Point[] _neighbours =
     {
         new(-1, 0),  // W
@@ -68,8 +67,6 @@ public class Minefield
                 FloodReveal(cell);
             }
 
-            if (_revealedCells == _totalCells - _numMines) { _playerHasWon = true; }
-
             return cell.Value;
         }
         else
@@ -87,17 +84,9 @@ public class Minefield
         if (GetCellAtPoint(cellLocation) is Cell cell) { cell.ChangeFlagState(); }
     }
 
-    public void RevealMines(Point mousePosition)
+    public void RevealMines(Point? mousePosition, bool playerHasWon)
     {
-        Point cellLocation = new(
-            (int)MathF.Floor(mousePosition.X / Cell.Size),
-            (int)MathF.Floor(mousePosition.Y / Cell.Size));
-
-        if (GetCellAtPoint(cellLocation) is Cell cell)
-        {
-            if (!PlayerHasWon) { cell.SetAsRevealedMine(); }
-
-            // Reveal all other mines.
+        // Reveal all mines.
             for (byte x = 0; x < GridWidth; x++)
             {
                 for (byte y = 0; y < GridHeight; y++)
@@ -108,6 +97,19 @@ public class Minefield
                         validCell.State = CellState.Revealed;
                     }
                 }
+        }
+
+        // If mouse position provided, highlight cell with clicked mine.
+        if (mousePosition is Point mousePos)
+        {
+            Point cellLocation = new(
+                (int)MathF.Floor(mousePos.X / Cell.Size),
+                (int)MathF.Floor(mousePos.Y / Cell.Size));
+
+            if (GetCellAtPoint(cellLocation) is Cell cell)
+            {
+                if (!playerHasWon) { cell.SetAsRevealedMine(); }
+
             }
         }
     }
@@ -147,7 +149,7 @@ public class Minefield
             }
         }
 
-        _totalCells = (ushort)(GridWidth * GridHeight);
+        _totalCells = GridWidth * GridHeight;
         _revealedCells = 0;
     }
 

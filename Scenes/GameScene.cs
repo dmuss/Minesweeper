@@ -7,7 +7,9 @@ namespace Minesweeper;
 public class GameScene : BaseScene
 {
     private readonly List<Rectangle> _cellTextureRects;
-    private Minefield _minefield;
+    private readonly Minefield _minefield;
+    private bool _playing = true;
+    private bool _playerHasWon = false;
 
     public GameScene(in MSGame game) : base(game)
     {
@@ -35,20 +37,33 @@ public class GameScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
-        if (MSGame.MouseInput.Position is Point mousePosition)
+
+        // Check for win.
+        if (_minefield.RemainingCells == 0)
         {
-            if (MSGame.MouseInput.LeftClick)
+            _playerHasWon = true;
+            _playing = false;
+            _minefield.RevealMines(null, _playerHasWon);
+        }
+
+        // Update mouse input.
+        if (Mouse.Position is Point mousePosition)
+        {
+            if (_playing)
             {
-                // TODO: Game win/game over notice and reset options.
-                if (_minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue || _minefield.PlayerHasWon)
-                {
-                    _minefield.RevealMines(mousePosition);
+                if (Mouse.LeftClick)
+            {
+                    if (_minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
+                    {
+                        _playing = false;
+                        _minefield.RevealMines(mousePosition, _playerHasWon);
                 }
             }
 
-            if (MSGame.MouseInput.RightClick)
+                if (Mouse.RightClick)
             {
                 _minefield.FlagCellAtPosition(mousePosition);
+                }
             }
         }
     }
