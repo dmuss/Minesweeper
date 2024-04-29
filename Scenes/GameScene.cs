@@ -14,7 +14,7 @@ public class GameScene : BaseScene
     private bool _playing = true;
     private bool _playerHasWon = false;
 
-    public GameScene(in MSGame game) : base(game)
+    public GameScene(MSGame game) : base(game)
     {
         _cellTextureRects = new();
         const byte textureRectSize = 26;
@@ -61,17 +61,17 @@ public class GameScene : BaseScene
             if (_playing)
             {
                 if (Mouse.LeftClick)
-            {
+                {
                     if (_minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
                     {
                         _playing = false;
                         _minefield.RevealMines(mousePosition, _playerHasWon);
+                    }
                 }
-            }
 
                 if (Mouse.RightClick)
-            {
-                _minefield.FlagCellAtPosition(mousePosition);
+                {
+                    _minefield.FlagCellAtPosition(mousePosition);
                 }
             }
         }

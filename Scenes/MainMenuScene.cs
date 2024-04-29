@@ -12,7 +12,7 @@ public class MainMenuScene : BaseScene
     private Rectangle _titleSprite = new(0, 102, 182, 21);
     private List<MenuButton> _buttons;
 
-    public MainMenuScene(in MSGame game) : base(game)
+    public MainMenuScene(MSGame game) : base(game)
     {
         _buttons = new()
         {
@@ -44,11 +44,11 @@ public class MainMenuScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
-        if (MSGame.MouseInput.Position is Point mousePosition)
+        if (Mouse.Position is Point mousePosition)
         {
             foreach (MenuButton button in _buttons)
             {
-                if (button.MouseInButton(mousePosition) && MSGame.MouseInput.LeftDown)
+                if (button.MouseInButton(mousePosition) && Mouse.LeftDown)
                 {
                     button.IsDown = true;
                 }
@@ -57,7 +57,7 @@ public class MainMenuScene : BaseScene
                     button.IsDown = false;
                 }
 
-                if (button.MouseInButton(mousePosition) && MSGame.MouseInput.LeftClick)
+                if (button.MouseInButton(mousePosition) && Mouse.LeftClick)
                 {
                     button.OnPress();
                 }

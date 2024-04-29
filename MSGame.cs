@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -31,6 +32,7 @@ public class MSGame : Game
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
     }
 #pragma warning restore CS8618
 
@@ -51,16 +53,13 @@ public class MSGame : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-
         _spriteSheet = Content.Load<Texture2D>("Spritesheet");
-
         _font = Content.Load<SpriteFont>("Silkscreen");
     }
 
     protected override void Update(GameTime gameTime)
     {
         UpdateInput();
-
         _sceneManager?.Update(gameTime);
 
         base.Update(gameTime);

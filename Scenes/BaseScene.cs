@@ -6,9 +6,14 @@ namespace Minesweeper;
 public abstract class BaseScene
 {
     protected bool IsCurrentScene { get; private set; }
-    protected MSGame MSGame { get; /*protected set;*/ }
+    protected MSGame MSGame { get; init; }
+    protected MouseInputManager Mouse { get; init; }
 
-    protected BaseScene(in MSGame game) => MSGame = game;
+    protected BaseScene(MSGame game)
+    {
+        MSGame = game;
+        Mouse = game.MouseInput;
+    }
 
     public abstract void Draw(SpriteBatch spriteBatch);
     public abstract void Update(GameTime gameTime);
