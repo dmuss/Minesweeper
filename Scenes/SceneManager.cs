@@ -8,7 +8,7 @@ namespace Minesweeper;
 
 public class SceneManager
 {
-    public enum Scenes { MainMenu, Game, GameOver };
+    public enum Scenes { MainMenu, Game };
 
     private readonly Dictionary<Scenes, BaseScene> _scenes;
 
@@ -19,7 +19,6 @@ public class SceneManager
         _scenes = new Dictionary<Scenes, BaseScene>{
             { Scenes.MainMenu, new MainMenuScene(game) },
             { Scenes.Game, new GameScene(game) },
-            { Scenes.GameOver, new GameOverScene(game) },
         };
         Debug.Assert(_scenes.Count == Enum.GetNames(typeof(Scenes)).Length,
                      "Scene manager does not have an instance of all required game scenes. Make sure to update the Scenes enum.");

@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -9,10 +8,8 @@ public enum Difficulty { Easy, Medium, Hard }
 
 public class MSGame : Game
 {
-
-    public Texture2D Pixel { get => _pixel; }
-    public Texture2D CellSheet { get => _cellSheet; }
-    public List<Rectangle> CellTextureRects { get => _cellTextureRects; }
+    public Texture2D Sprites { get => _spriteSheet; }
+    public SpriteFont Font { get => _font; }
     public MouseInputManager MouseInput { get => _mouseInput; }
     public SceneManager SceneManager { get => _sceneManager; }
     public Minefield Minefield { get => _mineField; }
@@ -22,13 +19,13 @@ public class MSGame : Game
 
     private readonly GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    private Texture2D _pixel;
-    private Texture2D _cellSheet;
+
     private SceneManager _sceneManager;
     private MouseInputManager _mouseInput;
-    private Minefield _mineField;
 
-    private List<Rectangle> _cellTextureRects;
+    private Minefield _mineField;
+    private Texture2D _spriteSheet;
+    private SpriteFont _font;
 
 #pragma warning disable CS8618 // Fields are not initialized in the Game constructor.
     public MSGame()
@@ -50,8 +47,6 @@ public class MSGame : Game
     {
         base.Initialize();
 
-        InitializeCellTextureRects();
-
         _mineField = new();
         SetBackBufferSize(_mineField.GridWidth * Cell.Size, _mineField.GridHeight * Cell.Size);
 
@@ -63,10 +58,9 @@ public class MSGame : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-        _pixel = new(GraphicsDevice, 1, 1);
-        _pixel.SetData(new Color[] { Color.White });
+        _spriteSheet = Content.Load<Texture2D>("Spritesheet");
 
-        _cellSheet = Content.Load<Texture2D>("CellSheet");
+        _font = Content.Load<SpriteFont>("Silkscreen");
     }
 
     protected override void Update(GameTime gameTime)
@@ -95,19 +89,5 @@ public class MSGame : Game
             Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
 
         _mouseInput.Update(GraphicsDevice.Viewport.Bounds);
-    }
-
-    private void InitializeCellTextureRects()
-    {
-        _cellTextureRects = new();
-        const byte textureRectSize = 26;
-        for (byte y = 0; y < 2; y++)
-        {
-            for (byte x = 0; x < 7; x++)
-            {
-                Rectangle rect = new(x * textureRectSize, y * textureRectSize, textureRectSize, textureRectSize);
-                _cellTextureRects.Add(rect);
-            }
-        }
     }
 }

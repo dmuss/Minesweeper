@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -5,7 +6,21 @@ namespace Minesweeper;
 
 public class GameScene : BaseScene
 {
-    public GameScene(in MSGame game) : base(game) { }
+    private readonly List<Rectangle> _cellTextureRects;
+
+    public GameScene(in MSGame game) : base(game)
+    {
+        _cellTextureRects = new();
+        const byte textureRectSize = 26;
+        for (byte y = 0; y < 2; y++)
+        {
+            for (byte x = 0; x < 7; x++)
+            {
+                Rectangle rect = new(x * textureRectSize, y * textureRectSize, textureRectSize, textureRectSize);
+                _cellTextureRects.Add(rect);
+            }
+        }
+    }
 
     public override void Enter()
     {
@@ -19,7 +34,7 @@ public class GameScene : BaseScene
         {
             if (MSGame.MouseInput.LeftClick)
             {
-                // TODO: Stop taking mouse input in minefield and provide reset options.
+                // TODO: Game win/game over notice and reset options.
                 if (MSGame.Minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
                 {
                     MSGame.Minefield.RevealMines(mousePosition);
@@ -51,16 +66,16 @@ public class GameScene : BaseScene
                     // otherwise use the underlying integral value of the state enum.
                     if (cell.State == CellState.Revealed)
                     {
-                        spriteBatch.Draw(texture: MSGame.CellSheet,
+                        spriteBatch.Draw(texture: MSGame.Sprites,
                                          destinationRectangle: cell.Rect,
-                                         sourceRectangle: MSGame.CellTextureRects[cell.Value],
+                                         sourceRectangle: _cellTextureRects[cell.Value],
                                          color: Color.White);
                     }
                     else
                     {
-                        spriteBatch.Draw(texture: MSGame.CellSheet,
+                        spriteBatch.Draw(texture: MSGame.Sprites,
                                          destinationRectangle: cell.Rect,
-                                         sourceRectangle: MSGame.CellTextureRects[(byte)cell.State],
+                                         sourceRectangle: _cellTextureRects[(byte)cell.State],
                                          color: Color.White);
                     }
                 }
