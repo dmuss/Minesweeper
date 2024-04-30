@@ -8,7 +8,7 @@ public class Minefield
 {
     public int Width { get; private set; }
     public int Height { get; private set; }
-    public int RemainingCells { get => _totalCells - _numMines - _revealedCells; }
+    public int RemainingCellsToWin { get => _totalCells - _numMines - _revealedCells; }
     public Cell[,] Cells { get => _cells; }
 
 #pragma warning disable CS8618 // initialised on reset every time game scene is loaded
@@ -50,7 +50,6 @@ public class Minefield
 
             if (cell.IsEmpty) { FloodReveal(cell); }
 
-            // return state so game scene can check for loss
             return cell.State;
         }
         else
@@ -229,7 +228,7 @@ public class Minefield
         // 480 cells, so this should be fine.
         foreach (Cell cell in Cells) { if (cell.IsMine) { RevealCell(cell); } }
 
-        if (GetCellAtPosition(mineToFlagLocation) is Cell mineToFlag) { mineToFlag.FlagAsRevealedMine(); }
+        if (GetCellAtPosition(mineToFlagLocation) is Cell mineToFlag) { mineToFlag.SetAsRevealedMine(); }
     }
     #endregion Private Methods
 }

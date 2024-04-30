@@ -34,10 +34,10 @@ public class Cell
     public int Y { get; init; }
     public Rectangle Rect { get; init; }
 
-    // Underlying value of cell representing whether cell is a mine or has adjacent mines.
+    // Underlying value of the cell that will be displayed when the cell is revealed based on the integral value
+    // of `State`.
     private int _value;
 
-    #region Public Methods
     public Cell(byte x, byte y)
     {
         _value = (int)CellState.Empty;
@@ -46,36 +46,29 @@ public class Cell
         Y = y;
     }
 
-    public void AddAdjacentMine() => _value = MathHelper.Clamp(++_value, 0, (int)CellState.Mine);
+    public void AddAdjacentMine() => _value = MathHelper.Clamp(_value + 1, 0, (int)CellState.Mine);
 
     public void SetAsMine() => _value = (int)CellState.Mine;
 
     public void Reveal() => State = (CellState)_value;
 
-    public void FlagAsRevealedMine() => State = CellState.RevealedMine;
+    public void SetAsRevealedMine() => State = CellState.RevealedMine;
 
     public void ChangeFlagState()
     {
         switch (State)
         {
             case CellState.Hidden:
-                {
-                    State = CellState.Flagged;
-                    break;
-                }
+                State = CellState.Flagged;
+                break;
             case CellState.Flagged:
-                {
-                    State = CellState.Question;
-                    break;
-                }
+                State = CellState.Question;
+                break;
             case CellState.Question:
-                {
-                    State = CellState.Hidden;
-                    break;
-                }
+                State = CellState.Hidden;
+                break;
             default:
                 break;
         }
     }
-    #endregion Public Methods
 }

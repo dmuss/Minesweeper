@@ -7,26 +7,37 @@ namespace Minesweeper;
 
 public enum Difficulty { Easy, Medium, Hard }
 
-public class MSGame : Game
+public sealed class MSGame : Game
 {
+    #region Assets 
     public Texture2D Sprites { get => _spriteSheet; }
     public SpriteFont Font { get => _font; }
-    public MouseInputManager MouseInput { get => _mouseInput; }
-    public SceneManager SceneManager { get => _sceneManager; }
-    public Difficulty Difficulty { get; set; } = Difficulty.Easy;
-    public int WindowWidth { get => _graphics.PreferredBackBufferWidth; }
-    public int WindowHeight { get => _graphics.PreferredBackBufferHeight; }
-
-    private readonly GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-
-    private SceneManager _sceneManager;
-    private MouseInputManager _mouseInput;
 
     private Texture2D _spriteSheet;
     private SpriteFont _font;
+    #endregion Assets 
 
-#pragma warning disable CS8618 // Fields are not initialized in the Game constructor.
+    #region GameSettings
+    public Difficulty Difficulty { get; set; } = Difficulty.Easy;
+    public int WindowWidth { get => _graphics.GraphicsDevice.PresentationParameters.BackBufferWidth; }
+    public int WindowHeight { get => _graphics.GraphicsDevice.PresentationParameters.BackBufferHeight; }
+    #endregion GameSettings
+
+    #region Managers
+    public MouseInputManager MouseInput { get => _mouseInput; }
+    public SceneManager SceneManager { get => _sceneManager; }
+
+    private SceneManager _sceneManager;
+    private MouseInputManager _mouseInput;
+    #endregion MAnagers
+
+    #region Resources
+    private readonly GraphicsDeviceManager _graphics;
+    private SpriteBatch _spriteBatch;
+    #endregion Resources
+
+    #region Public Methods
+#pragma warning disable CS8618 // Initialisation in Monogame is typically not done in the Game constructor.
     public MSGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -42,7 +53,9 @@ public class MSGame : Game
         _graphics.PreferredBackBufferHeight = height;
         _graphics.ApplyChanges();
     }
+    #endregion Public Methods
 
+    #region Protected Override Methods
     protected override void Initialize()
     {
         base.Initialize();
@@ -75,7 +88,9 @@ public class MSGame : Game
 
         base.Draw(gameTime);
     }
+    #endregion Protected Override Methods
 
+    #region Private Methods
     private void UpdateInput()
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
@@ -83,4 +98,5 @@ public class MSGame : Game
 
         _mouseInput.Update(GraphicsDevice.Viewport.Bounds);
     }
+    #endregion Private Methods
 }

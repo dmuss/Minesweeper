@@ -5,12 +5,12 @@ namespace Minesweeper;
 
 public class MenuButton
 {
+    public bool IsDown { get; set; } = false;
+
     public Rectangle Rect { get; init; }
     public Color Colour { get; init; }
     public Action OnPress { get; init; }
     public string Label { get; init; }
-
-    public bool IsDown { get; set; } = false;
 
     public MenuButton(string label, Rectangle rect, Color colour, Action onPress)
     {
@@ -20,7 +20,7 @@ public class MenuButton
         OnPress = onPress;
     }
 
-    public bool MouseInButton(Point mousePosition)
+    public bool IsMouseInButton(Point mousePosition)
     {
         return (mousePosition.X >= Rect.X && mousePosition.X <= Rect.Right) &&
                (mousePosition.Y >= Rect.Y && mousePosition.Y <= Rect.Bottom);

@@ -11,7 +11,6 @@ public class SceneManager
     public enum Scenes { MainMenu, Game };
 
     private readonly Dictionary<Scenes, BaseScene> _scenes;
-
     private BaseScene _currentScene;
 
     public SceneManager(MSGame game)

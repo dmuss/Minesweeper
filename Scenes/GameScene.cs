@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 #if DEBUG
@@ -48,51 +47,22 @@ public class GameScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
-        if (_playing)
+        // Check for win.
+        if (_minefield.RemainingCellsToWin == 0)
         {
+            _playing = false;
+            _minefield.Win();
+        }
+
 #if DEBUG
-            if (Keyboard.GetState().IsKeyDown(Keys.F12))
-            {
-                _playing = false;
-                _minefield.Win();
-            }
-#endif
-            // Check for win.
-            if (_minefield.RemainingCells == 0)
-            {
-                Debug.WriteLine("PLAYER WINS!");
-
-                _playing = false;
-                _minefield.Win();
-            }
-
-            // Update mouse input.
-            if (Mouse.Position is Point mousePosition)
-            {
-                Point minefieldPos = new((int)MathF.Floor(mousePosition.X / Cell.Size),
-                                         (int)MathF.Floor(mousePosition.Y / Cell.Size));
-
-                if (Mouse.LeftClick)
-                {
-                    if (_minefield.RevealCellAtPosition(minefieldPos) is CellState state && state == CellState.Mine)
-                    {
-                        Debug.WriteLine("PLAYER LOSES!");
-
-                        _playing = false;
-                        _minefield.Lose(minefieldPos);
-                    }
-                }
-
-                if (Mouse.RightClick) { _minefield.FlagCellAtPosition(minefieldPos); }
-            }
-        }
-        else
+        if (Keyboard.GetState().IsKeyDown(Keys.F12) && _playing)
         {
-            if (Mouse.LeftClick)
-            {
-                MSGame.SceneManager.SwitchScene(SceneManager.Scenes.MainMenu);
-            }
+            _playing = false;
+            _minefield.Win();
         }
+#endif
+
+        UpdateMouseInput();
     }
 
     public override void Draw(SpriteBatch spriteBatch)
@@ -103,6 +73,34 @@ public class GameScene : BaseScene
                              destinationRectangle: cell.Rect,
                              sourceRectangle: _cellSpriteRects[(int)cell.State],
                              color: Color.White);
+        }
+    }
+
+    private void UpdateMouseInput()
+    {
+        if (_playing)
+        {
+            Point minefieldPos = new((int)MathF.Floor(Mouse.Position.X / Cell.Size),
+                                     (int)MathF.Floor(Mouse.Position.Y / Cell.Size));
+
+            if (Mouse.LeftClick)
+            {
+                if (_minefield.RevealCellAtPosition(minefieldPos) is CellState state && state == CellState.Mine)
+                {
+                    _playing = false;
+                    _minefield.Lose(minefieldPos);
+                }
+            }
+
+            if (Mouse.RightClick) { _minefield.FlagCellAtPosition(minefieldPos); }
+        }
+        else
+        {
+            if (Mouse.LeftClick || Mouse.RightClick)
+            {
+                MSGame.SceneManager.SwitchScene(SceneManager.Scenes.MainMenu);
+            }
+
         }
     }
 }

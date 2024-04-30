@@ -48,7 +48,7 @@ public class MainMenuScene : BaseScene
         {
             foreach (MenuButton button in _buttons)
             {
-                if (button.MouseInButton(mousePosition) && Mouse.LeftDown)
+                if (button.IsMouseInButton(mousePosition) && Mouse.LeftDown)
                 {
                     button.IsDown = true;
                 }
@@ -57,7 +57,7 @@ public class MainMenuScene : BaseScene
                     button.IsDown = false;
                 }
 
-                if (button.MouseInButton(mousePosition) && Mouse.LeftClick)
+                if (button.IsMouseInButton(mousePosition) && Mouse.LeftClick)
                 {
                     button.OnPress();
                 }
