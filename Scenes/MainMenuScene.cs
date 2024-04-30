@@ -7,10 +7,10 @@ namespace Minesweeper;
 public class MainMenuScene : BaseScene
 {
     private const ushort _windowSize = 750;
-    private Rectangle _buttonUpSprite = new(0, 52, 182, 25);
-    private Rectangle _buttonDownSprite = new(0, 77, 182, 25);
-    private Rectangle _titleSprite = new(0, 102, 182, 21);
-    private List<MenuButton> _buttons;
+    private readonly Rectangle _buttonUpSprite = new(0, 52, 182, 25);
+    private readonly Rectangle _buttonDownSprite = new(0, 77, 182, 25);
+    private readonly Rectangle _titleSprite = new(0, 102, 182, 21);
+    private readonly List<MenuButton> _buttons;
 
     public MainMenuScene(MSGame game) : base(game)
     {

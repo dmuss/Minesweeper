@@ -27,10 +27,7 @@ public class Minefield
     };
 
 #pragma warning disable CS8618 // _cells initialised in separate function to allow for easy difficulty changes.
-    public Minefield(Difficulty difficulty = Difficulty.Easy)
-    {
-        Reset(difficulty);
-    }
+    public Minefield(Difficulty difficulty = Difficulty.Easy) => Reset(difficulty);
 #pragma warning restore CS8618
 
 #if DEBUG
@@ -61,14 +58,7 @@ public class Minefield
 
     public Cell? GetCellAtPoint(Point cellLocation)
     {
-        if (!PointInGridBounds(cellLocation))
-        {
-            return null;
-        }
-        else
-        {
-            return _cells[cellLocation.Y, cellLocation.X];
-        }
+        return IsPointInGridBounds(cellLocation) ? _cells[cellLocation.Y, cellLocation.X] : null;
     }
 
     public int? RevealCellAtPosition(Point mousePosition)
@@ -119,18 +109,13 @@ public class Minefield
             }
         }
 
-        // If mouse position provided, highlight cell with clicked mine.
-        if (mousePosition is Point mousePos)
+        if (!playerHasWon && mousePosition is Point mousePos)
         {
             Point cellLocation = new(
                 (int)MathF.Floor(mousePos.X / Cell.Size),
                 (int)MathF.Floor(mousePos.Y / Cell.Size));
 
-            if (GetCellAtPoint(cellLocation) is Cell cell)
-            {
-                if (!playerHasWon) { cell.SetAsRevealedMine(); }
-
-            }
+            if (GetCellAtPoint(cellLocation) is Cell cell) { cell.SetAsRevealedMine(); }
         }
     }
 
@@ -208,7 +193,7 @@ public class Minefield
         }
     }
 
-    private bool PointInGridBounds(Point point)
+    private bool IsPointInGridBounds(Point point)
     {
         return (point.X >= 0 && point.X < GridWidth) &&
                (point.Y >= 0 && point.Y < GridHeight);

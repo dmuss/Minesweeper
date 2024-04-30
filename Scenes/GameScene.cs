@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 #if DEBUG
@@ -9,21 +10,21 @@ namespace Minesweeper;
 
 public class GameScene : BaseScene
 {
-    private readonly List<Rectangle> _cellTextureRects;
+    private readonly List<Rectangle> _cellSpriteRects;
     private readonly Minefield _minefield;
     private bool _playing = true;
     private bool _playerHasWon = false;
 
     public GameScene(MSGame game) : base(game)
     {
-        _cellTextureRects = new();
+        _cellSpriteRects = new();
         const byte textureRectSize = 26;
         for (byte y = 0; y < 2; y++)
         {
             for (byte x = 0; x < 7; x++)
             {
                 Rectangle rect = new(x * textureRectSize, y * textureRectSize, textureRectSize, textureRectSize);
-                _cellTextureRects.Add(rect);
+                _cellSpriteRects.Add(rect);
             }
         }
 
@@ -61,6 +62,8 @@ public class GameScene : BaseScene
             // Check for win.
             if (_minefield.RemainingCells == 0)
             {
+                Debug.WriteLine("PLAYER WINS!");
+
                 _playerHasWon = true;
                 _playing = false;
                 _minefield.RevealMines(null, _playerHasWon);
@@ -73,6 +76,8 @@ public class GameScene : BaseScene
                 {
                     if (_minefield.RevealCellAtPosition(mousePosition) == Cell.MineValue)
                     {
+                        Debug.WriteLine("PLAYER LOSES!");
+
                         _playing = false;
                         _minefield.RevealMines(mousePosition, _playerHasWon);
                     }
@@ -108,18 +113,29 @@ public class GameScene : BaseScene
                     {
                         spriteBatch.Draw(texture: MSGame.Sprites,
                                          destinationRectangle: cell.Rect,
-                                         sourceRectangle: _cellTextureRects[cell.Value],
+                                         sourceRectangle: _cellSpriteRects[cell.Value],
                                          color: Color.White);
                     }
                     else
                     {
                         spriteBatch.Draw(texture: MSGame.Sprites,
                                          destinationRectangle: cell.Rect,
-                                         sourceRectangle: _cellTextureRects[(byte)cell.State],
+                                         sourceRectangle: _cellSpriteRects[(byte)cell.State],
                                          color: Color.White);
                     }
                 }
             }
         }
+
+        //if (!_playing)
+        //{
+        //    string textString = _playerHasWon ? "YOU WON" : "YOU LOST";
+        //    Vector2 halfTextSize = MSGame.Font.MeasureString(textString) / 2;
+        //    Vector2 viewportCenter = new(MSGame.GraphicsDevice.Viewport.Width / 2, MSGame.GraphicsDevice.Viewport.Height / 2);
+        //    spriteBatch.DrawString(MSGame.Font,
+        //                           textString,
+        //                           new Vector2(viewportCenter.X - halfTextSize.X, viewportCenter.Y - halfTextSize.Y),
+        //                           Color.Black);
+        //}
     }
 }

@@ -15,7 +15,6 @@ public class MouseInputManager
 
     private MouseState _oldState;
     private MouseState _currentState;
-    private bool _inScreenBounds;
 
     private Point? _position;
     private bool _leftButtonDown;
@@ -29,28 +28,18 @@ public class MouseInputManager
     public void Update(Rectangle screenBounds)
     {
         _currentState = Mouse.GetState();
-        _inScreenBounds = MouseInScreenBounds(screenBounds);
 
-        _leftButtonDown = (_currentState.LeftButton == ButtonState.Pressed) && _inScreenBounds;
-
-        _leftButtonClick =
-            (_currentState.LeftButton == ButtonState.Released && _oldState.LeftButton == ButtonState.Pressed) &&
-            _inScreenBounds;
-
-        _rightButtonDown = (_currentState.RightButton == ButtonState.Pressed) && _inScreenBounds;
-
-        _rightButtonClick =
-            (_currentState.RightButton == ButtonState.Released && _oldState.RightButton == ButtonState.Pressed) &&
-            _inScreenBounds;
-
-        _middleButtonDown = (_currentState.MiddleButton == ButtonState.Pressed) && _inScreenBounds;
-
-        _middleButtonClick =
-            (_currentState.MiddleButton == ButtonState.Released && _oldState.MiddleButton == ButtonState.Pressed) &&
-            _inScreenBounds;
-
-        if (_inScreenBounds)
+        if (MouseInScreenBounds(screenBounds))
         {
+            _leftButtonDown = _currentState.LeftButton == ButtonState.Pressed;
+            _leftButtonClick = _currentState.LeftButton == ButtonState.Released && _oldState.LeftButton == ButtonState.Pressed;
+
+            _rightButtonDown = _currentState.RightButton == ButtonState.Pressed;
+            _rightButtonClick = _currentState.RightButton == ButtonState.Released && _oldState.RightButton == ButtonState.Pressed;
+
+            _middleButtonDown = _currentState.MiddleButton == ButtonState.Pressed;
+            _middleButtonClick = _currentState.MiddleButton == ButtonState.Released && _oldState.MiddleButton == ButtonState.Pressed;
+
             _position = _currentState.Position;
         }
         else
