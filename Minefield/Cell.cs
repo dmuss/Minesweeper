@@ -2,43 +2,57 @@ using Microsoft.Xna.Framework;
 
 namespace Minesweeper;
 
-public enum CellState : byte { Revealed, Hidden = 11, Flagged, Question }
+public enum CellState : byte
+{
+    Empty,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
+    Eight,
+    Mine,
+    RevealedMine,
+    Hidden,
+    Flagged,
+    Question
+}
 
 public class Cell
 {
-    public static byte NoAdjacentMineValue { get; } = 0;
-    public static byte MineValue { get; } = 9;
-    public static byte RevealedMineValue { get; } = 10;
+    public static int Size { get; } = 50;
+    public static int HalfSize { get; } = Size / 2;
 
-    public static byte Size { get; } = 50;
-    public static byte HalfSize { get; } = (byte)(Size / 2);
+    public bool IsEmpty { get => _value == (int)CellState.Empty; }
+    public bool IsMine { get => _value == (int)CellState.Mine; }
+    public bool IsHidden { get => State == CellState.Hidden; }
 
-    public CellState State { get; set; } = CellState.Hidden;
-
-    public byte X { get; init; }
-    public byte Y { get; init; }
+    public CellState State { get; private set; } = CellState.Hidden;
+    public int X { get; init; }
+    public int Y { get; init; }
     public Rectangle Rect { get; init; }
 
-    public byte Value
-    {
-        get => _value;
-        set { _value = (byte)MathHelper.Clamp(value, 0, MineValue); }
-    }
+    // Underlying value of cell representing whether cell is a mine or has adjacent mines.
+    private int _value;
 
-    private byte _value;
-
+    #region Public Methods
     public Cell(byte x, byte y)
     {
-        Value = NoAdjacentMineValue;
+        _value = (int)CellState.Empty;
         Rect = new(Size * x, Size * y, Size, Size);
         X = x;
         Y = y;
     }
 
-    public void SetAsRevealedMine()
-    {
-        _value = RevealedMineValue;
-    }
+    public void AddAdjacentMine() => _value = MathHelper.Clamp(++_value, 0, (int)CellState.Mine);
+
+    public void SetAsMine() => _value = (int)CellState.Mine;
+
+    public void Reveal() => State = (CellState)_value;
+
+    public void FlagAsRevealedMine() => State = CellState.RevealedMine;
 
     public void ChangeFlagState()
     {
@@ -59,9 +73,9 @@ public class Cell
                     State = CellState.Hidden;
                     break;
                 }
-            case CellState.Revealed:
             default:
                 break;
         }
     }
+    #endregion Public Methods
 }
