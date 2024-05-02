@@ -14,7 +14,7 @@ public class GameScene : BaseScene
     private readonly Minefield _minefield;
     private bool _playing = true;
 
-    public GameScene(MSGame game) : base(game)
+    public GameScene()
     {
         _cellSpriteRects = new();
         const byte textureRectSize = 26;
@@ -33,7 +33,7 @@ public class GameScene : BaseScene
     public override void Enter()
     {
         _minefield.Reset(MSGame.Difficulty);
-        MSGame.SetBackBufferSize(_minefield.Width * Cell.Size, _minefield.Height * Cell.Size);
+        MSGame.RequestedWindowSize = new(_minefield.Width * Cell.Size, _minefield.Height * Cell.Size);
 
         base.Enter();
     }
@@ -98,7 +98,7 @@ public class GameScene : BaseScene
         {
             if (MouseInput.LeftClick || MouseInput.RightClick)
             {
-                MSGame.SceneManager.SwitchScene(Scenes.MainMenu);
+                SceneManager.SwitchScene(Scenes.MainMenu);
             }
 
         }

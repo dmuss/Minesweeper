@@ -9,33 +9,18 @@ public enum Difficulty { Easy, Medium, Hard }
 
 public sealed class MSGame : Game
 {
-    #region Assets 
-    public Texture2D Sprites { get => _spriteSheet; }
-    public SpriteFont Font { get => _font; }
+    public static bool ShouldQuit { get; set; }
+    public static Vector2 RequestedWindowSize { get; set; }
+    public static Difficulty Difficulty { get; set; } = Difficulty.Easy;
+    public static Texture2D Sprites { get => _spriteSheet; }
+    public static SpriteFont Font { get => _font; }
 
-    private Texture2D _spriteSheet;
-    private SpriteFont _font;
-    #endregion Assets 
+    private static Texture2D _spriteSheet; // Initialised in LoadContent()
+    private static SpriteFont _font;       // Initialised in LoadContent()
 
-    #region GameSettings
-    public Difficulty Difficulty { get; set; } = Difficulty.Easy;
-    public int WindowWidth { get => _graphics.GraphicsDevice.PresentationParameters.BackBufferWidth; }
-    public int WindowHeight { get => _graphics.GraphicsDevice.PresentationParameters.BackBufferHeight; }
-    #endregion GameSettings
+    private GraphicsDeviceManager _graphics;
+    private SpriteBatch _spriteBatch; // Initialised in LoadContent()
 
-    #region Managers
-    public SceneManager SceneManager { get => _sceneManager; }
-
-    private SceneManager _sceneManager;
-    #endregion MAnagers
-
-    #region Resources
-    private readonly GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-    #endregion Resources
-
-    #region Public Methods
-#pragma warning disable CS8618 // Initialisation in Monogame is typically not done in the Game constructor.
     public MSGame()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -43,21 +28,10 @@ public sealed class MSGame : Game
         IsMouseVisible = true;
         TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
     }
-#pragma warning restore CS8618
 
-    public void SetBackBufferSize(int width, int height)
-    {
-        _graphics.PreferredBackBufferWidth = width;
-        _graphics.PreferredBackBufferHeight = height;
-        _graphics.ApplyChanges();
-    }
-    #endregion Public Methods
-
-    #region Protected Override Methods
     protected override void Initialize()
     {
         base.Initialize();
-        _sceneManager = new(this);
     }
 
     protected override void LoadContent()
@@ -69,8 +43,18 @@ public sealed class MSGame : Game
 
     protected override void Update(GameTime gameTime)
     {
+        if (ShouldQuit) { Exit(); }
+
+        if (RequestedWindowSize.X != GraphicsDevice.Viewport.Width || RequestedWindowSize.Y != GraphicsDevice.Viewport.Height)
+        {
+            _graphics.PreferredBackBufferWidth = (int)RequestedWindowSize.X;
+            _graphics.PreferredBackBufferHeight = (int)RequestedWindowSize.Y;
+            _graphics.ApplyChanges();
+        }
+
         UpdateInput();
-        _sceneManager?.Update(gameTime);
+
+        SceneManager.Update(gameTime);
 
         base.Update(gameTime);
     }
@@ -80,20 +64,17 @@ public sealed class MSGame : Game
         GraphicsDevice.Clear(Color.Black);
 
         _spriteBatch.Begin(samplerState: SamplerState.PointClamp);
-        _sceneManager?.Draw(_spriteBatch);
+        SceneManager.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
     }
-    #endregion Protected Override Methods
 
-    #region Private Methods
     private void UpdateInput()
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
+            Keyboard.GetState().IsKeyDown(Keys.Escape)) { ShouldQuit = true; }
 
         MouseInput.Update(GraphicsDevice.Viewport.Bounds);
     }
-    #endregion Private Methods
 }

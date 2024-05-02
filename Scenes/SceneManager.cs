@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
@@ -8,29 +7,34 @@ namespace Minesweeper;
 
 public enum Scenes { MainMenu, Game };
 
-public class SceneManager
+public static class SceneManager
 {
-    private readonly Dictionary<Scenes, BaseScene> _scenes;
-    private BaseScene _currentScene;
+    private static Dictionary<Scenes, BaseScene> _scenes = new();
+    private static BaseScene _currentScene;
 
-    public SceneManager(MSGame game)
+    static SceneManager()
     {
-        _scenes = new Dictionary<Scenes, BaseScene>{
-            { Scenes.MainMenu, new MainMenuScene(game) },
-            { Scenes.Game, new GameScene(game) },
+        _scenes = new()
+        {
+            {Scenes.MainMenu, new MainMenuScene()},
+            {Scenes.Game, new GameScene()},
         };
-        Debug.Assert(_scenes.Count == Enum.GetNames(typeof(Scenes)).Length,
-                     "Scene manager does not have an instance of all required game scenes. Make sure to update the Scenes enum.");
 
         _currentScene = _scenes[Scenes.MainMenu];
         _currentScene.Enter();
     }
 
-    public void Update(GameTime gameTime) { _currentScene.Update(gameTime); }
+    public static void Update(GameTime gameTime)
+    {
+        _currentScene.Update(gameTime);
+    }
 
-    public void Draw(SpriteBatch spriteBatch) { _currentScene.Draw(spriteBatch); }
+    public static void Draw(SpriteBatch spriteBatch)
+    {
+        _currentScene.Draw(spriteBatch);
+    }
 
-    public void SwitchScene(Scenes scene)
+    public static void SwitchScene(Scenes scene)
     {
         _currentScene.Leave();
         _currentScene = _scenes[scene];

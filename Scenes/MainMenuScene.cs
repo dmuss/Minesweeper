@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -12,32 +13,32 @@ public class MainMenuScene : BaseScene
     private readonly Rectangle _titleSprite = new(0, 102, 182, 21);
     private readonly List<MenuButton> _buttons;
 
-    public MainMenuScene(MSGame game) : base(game)
+    public MainMenuScene()
     {
         _buttons = new()
         {
             new MenuButton("EASY",
                            new Rectangle(100, 200, 546, 75),
                            Color.White,
-                           onPress: () => { MSGame.Difficulty = Difficulty.Easy; MSGame.SceneManager.SwitchScene(Scenes.Game); }),
+                           onPress: () => { StartGame(Difficulty.Easy); }),
             new MenuButton("MEDIUM",
                            new Rectangle(100, 300, 546, 75),
                            Color.Aquamarine,
-                           onPress: () => { MSGame.Difficulty = Difficulty.Medium; MSGame.SceneManager.SwitchScene(Scenes.Game); }),
+                           onPress: () => { StartGame(Difficulty.Medium); }),
             new MenuButton("HARD",
                            new Rectangle(100, 400, 546, 75),
                            Color.MistyRose,
-                           onPress: () => { MSGame.Difficulty = Difficulty.Hard; MSGame.SceneManager.SwitchScene(Scenes.Game); }),
+                           onPress: () => { StartGame(Difficulty.Hard); }),
             new MenuButton("QUIT",
                            new Rectangle(100, 500, 546, 75),
                            Color.Green,
-                           onPress: () => { MSGame.Exit(); }),
+                           onPress: () => { MSGame.ShouldQuit = true; }),
         };
     }
 
     public override void Enter()
     {
-        MSGame.SetBackBufferSize(_windowSize, _windowSize);
+        MSGame.RequestedWindowSize = new Vector2(_windowSize, _windowSize);
 
         base.Enter();
     }
@@ -82,5 +83,11 @@ public class MainMenuScene : BaseScene
                                    position: new Vector2(button.Rect.Center.X - halflabelSize.X, button.Rect.Y + 3),
                                    color: button.IsDown ? Color.Black * 0.7f : Color.Black * 0.6f);
         }
+    }
+
+    private static void StartGame(Difficulty difficulty)
+    {
+        MSGame.Difficulty = difficulty;
+        SceneManager.SwitchScene(Scenes.Game);
     }
 }

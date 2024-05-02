@@ -6,12 +6,6 @@ namespace Minesweeper;
 public abstract class BaseScene
 {
     protected bool IsCurrentScene { get; private set; }
-    protected MSGame MSGame { get; init; }
-
-    protected BaseScene(MSGame game)
-    {
-        MSGame = game;
-    }
 
     public abstract void Draw(SpriteBatch spriteBatch);
     public abstract void Update(GameTime gameTime);
