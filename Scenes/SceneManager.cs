@@ -6,10 +6,10 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Minesweeper;
 
+public enum Scenes { MainMenu, Game };
+
 public class SceneManager
 {
-    public enum Scenes { MainMenu, Game };
-
     private readonly Dictionary<Scenes, BaseScene> _scenes;
     private BaseScene _currentScene;
 

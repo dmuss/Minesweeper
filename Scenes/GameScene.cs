@@ -80,10 +80,10 @@ public class GameScene : BaseScene
     {
         if (_playing)
         {
-            Point minefieldPos = new((int)MathF.Floor(Mouse.Position.X / Cell.Size),
-                                     (int)MathF.Floor(Mouse.Position.Y / Cell.Size));
+            Point minefieldPos = new((int)MathF.Floor(MouseInput.Position.X / Cell.Size),
+                                     (int)MathF.Floor(MouseInput.Position.Y / Cell.Size));
 
-            if (Mouse.LeftClick)
+            if (MouseInput.LeftClick)
             {
                 if (_minefield.RevealCellAtPosition(minefieldPos) is CellState state && state == CellState.Mine)
                 {
@@ -92,13 +92,13 @@ public class GameScene : BaseScene
                 }
             }
 
-            if (Mouse.RightClick) { _minefield.FlagCellAtPosition(minefieldPos); }
+            if (MouseInput.RightClick) { _minefield.FlagCellAtPosition(minefieldPos); }
         }
         else
         {
-            if (Mouse.LeftClick || Mouse.RightClick)
+            if (MouseInput.LeftClick || MouseInput.RightClick)
             {
-                MSGame.SceneManager.SwitchScene(SceneManager.Scenes.MainMenu);
+                MSGame.SceneManager.SwitchScene(Scenes.MainMenu);
             }
 
         }

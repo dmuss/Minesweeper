@@ -24,11 +24,9 @@ public sealed class MSGame : Game
     #endregion GameSettings
 
     #region Managers
-    public MouseInputManager MouseInput { get => _mouseInput; }
     public SceneManager SceneManager { get => _sceneManager; }
 
     private SceneManager _sceneManager;
-    private MouseInputManager _mouseInput;
     #endregion MAnagers
 
     #region Resources
@@ -59,7 +57,6 @@ public sealed class MSGame : Game
     protected override void Initialize()
     {
         base.Initialize();
-        _mouseInput = new();
         _sceneManager = new(this);
     }
 
@@ -96,7 +93,7 @@ public sealed class MSGame : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
             Keyboard.GetState().IsKeyDown(Keys.Escape)) { Exit(); }
 
-        _mouseInput.Update(GraphicsDevice.Viewport.Bounds);
+        MouseInput.Update(GraphicsDevice.Viewport.Bounds);
     }
     #endregion Private Methods
 }

@@ -19,15 +19,15 @@ public class MainMenuScene : BaseScene
             new MenuButton("EASY",
                            new Rectangle(100, 200, 546, 75),
                            Color.White,
-                           onPress: () => { MSGame.Difficulty = Difficulty.Easy; MSGame.SceneManager.SwitchScene(SceneManager.Scenes.Game); }),
+                           onPress: () => { MSGame.Difficulty = Difficulty.Easy; MSGame.SceneManager.SwitchScene(Scenes.Game); }),
             new MenuButton("MEDIUM",
                            new Rectangle(100, 300, 546, 75),
                            Color.Aquamarine,
-                           onPress: () => { MSGame.Difficulty = Difficulty.Medium; MSGame.SceneManager.SwitchScene(SceneManager.Scenes.Game); }),
+                           onPress: () => { MSGame.Difficulty = Difficulty.Medium; MSGame.SceneManager.SwitchScene(Scenes.Game); }),
             new MenuButton("HARD",
                            new Rectangle(100, 400, 546, 75),
                            Color.MistyRose,
-                           onPress: () => { MSGame.Difficulty = Difficulty.Hard; MSGame.SceneManager.SwitchScene(SceneManager.Scenes.Game); }),
+                           onPress: () => { MSGame.Difficulty = Difficulty.Hard; MSGame.SceneManager.SwitchScene(Scenes.Game); }),
             new MenuButton("QUIT",
                            new Rectangle(100, 500, 546, 75),
                            Color.Green,
@@ -44,23 +44,20 @@ public class MainMenuScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
-        if (Mouse.Position is Point mousePosition)
+        foreach (MenuButton button in _buttons)
         {
-            foreach (MenuButton button in _buttons)
+            if (button.IsMouseInButton(MouseInput.Position) && MouseInput.LeftDown)
             {
-                if (button.IsMouseInButton(mousePosition) && Mouse.LeftDown)
-                {
-                    button.IsDown = true;
-                }
-                else
-                {
-                    button.IsDown = false;
-                }
+                button.IsDown = true;
+            }
+            else
+            {
+                button.IsDown = false;
+            }
 
-                if (button.IsMouseInButton(mousePosition) && Mouse.LeftClick)
-                {
-                    button.OnPress();
-                }
+            if (button.IsMouseInButton(MouseInput.Position) && MouseInput.LeftClick)
+            {
+                button.OnPress();
             }
         }
     }

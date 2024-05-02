@@ -3,24 +3,24 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minesweeper;
 
-public class MouseInputManager
+public static class MouseInput
 {
-    public Point Position { get => _position; }
-    public bool LeftClick { get => _leftButtonClick; }
-    public bool LeftDown { get => _leftButtonDown; }
-    public bool RightClick { get => _rightButtonClick; }
-    public bool RightDown { get => _rightButtonDown; }
+    public static Point Position { get => _position; }
+    public static bool LeftClick { get => _leftButtonClick; }
+    public static bool LeftDown { get => _leftButtonDown; }
+    public static bool RightClick { get => _rightButtonClick; }
+    public static bool RightDown { get => _rightButtonDown; }
 
-    private MouseState _oldState;
-    private MouseState _currentState;
+    private static MouseState _oldState;
+    private static MouseState _currentState;
 
-    private Point _position;
-    private bool _leftButtonDown;
-    private bool _leftButtonClick;
-    private bool _rightButtonDown;
-    private bool _rightButtonClick;
+    private static Point _position;
+    private static bool _leftButtonDown;
+    private static bool _leftButtonClick;
+    private static bool _rightButtonDown;
+    private static bool _rightButtonClick;
 
-    public void Update(Rectangle screenBounds)
+    public static void Update(Rectangle screenBounds)
     {
         _currentState = Mouse.GetState();
 
@@ -38,9 +38,9 @@ public class MouseInputManager
         _oldState = _currentState;
     }
 
-    public void Reset() { _oldState = Mouse.GetState(); }
+    public static void Reset() { _oldState = Mouse.GetState(); }
 
-    private bool MouseInScreenBounds(Rectangle screenBounds)
+    private static bool MouseInScreenBounds(Rectangle screenBounds)
     {
         bool inXBounds = _currentState.X >= screenBounds.X && _currentState.X <= (screenBounds.X + screenBounds.Width);
         bool inYBounds = _currentState.Y >= screenBounds.Y && _currentState.Y <= (screenBounds.Y + screenBounds.Height);
