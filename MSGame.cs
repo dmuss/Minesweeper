@@ -12,11 +12,8 @@ public sealed class MSGame : Game
     public static bool ShouldQuit { get; set; }
     public static Vector2 RequestedWindowSize { get; set; }
     public static Difficulty Difficulty { get; set; } = Difficulty.Easy;
-    public static Texture2D Sprites { get => _spriteSheet; }
-    public static SpriteFont Font { get => _font; }
-
-    private static Texture2D _spriteSheet; // Initialised in LoadContent()
-    private static SpriteFont _font;       // Initialised in LoadContent()
+    public static Texture2D Sprites { get; private set; } // Initialised in LoadContent()
+    public static SpriteFont Font { get; private set; } // Initialised in LoadContent()
 
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch; // Initialised in LoadContent()
@@ -37,8 +34,9 @@ public sealed class MSGame : Game
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-        _spriteSheet = Content.Load<Texture2D>("Spritesheet");
-        _font = Content.Load<SpriteFont>("Silkscreen");
+
+        Sprites = Content.Load<Texture2D>("Spritesheet");
+        Font = Content.Load<SpriteFont>("Silkscreen");
     }
 
     protected override void Update(GameTime gameTime)

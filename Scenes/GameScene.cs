@@ -33,6 +33,7 @@ public class GameScene : BaseScene
     public override void Enter()
     {
         _minefield.Reset(MSGame.Difficulty);
+
         MSGame.RequestedWindowSize = new(_minefield.Width * Cell.Size, _minefield.Height * Cell.Size);
 
         base.Enter();
@@ -47,7 +48,6 @@ public class GameScene : BaseScene
 
     public override void Update(GameTime gameTime)
     {
-        // Check for win.
         if (_minefield.RemainingCellsToWin == 0)
         {
             _playing = false;
@@ -55,29 +55,13 @@ public class GameScene : BaseScene
         }
 
 #if DEBUG
-        if (Keyboard.GetState().IsKeyDown(Keys.F12) && _playing)
+        if (Keyboard.GetState().IsKeyDown(Keys.F12))
         {
             _playing = false;
             _minefield.Win();
         }
 #endif
 
-        UpdateMouseInput();
-    }
-
-    public override void Draw(SpriteBatch spriteBatch)
-    {
-        foreach (Cell cell in _minefield.Cells)
-        {
-            spriteBatch.Draw(texture: MSGame.Sprites,
-                             destinationRectangle: cell.Rect,
-                             sourceRectangle: _cellSpriteRects[(int)cell.State],
-                             color: Color.White);
-        }
-    }
-
-    private void UpdateMouseInput()
-    {
         if (_playing)
         {
             Point minefieldPos = new((int)MathF.Floor(MouseInput.Position.X / Cell.Size),
@@ -101,6 +85,17 @@ public class GameScene : BaseScene
                 SceneManager.SwitchScene(Scenes.MainMenu);
             }
 
+        }
+    }
+
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+        foreach (Cell cell in _minefield.Cells)
+        {
+            spriteBatch.Draw(texture: MSGame.Sprites,
+                             destinationRectangle: cell.Rect,
+                             sourceRectangle: _cellSpriteRects[(int)cell.State],
+                             color: Color.White);
         }
     }
 }

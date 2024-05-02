@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
@@ -9,10 +11,8 @@ public class Minefield
     public int Width { get; private set; }
     public int Height { get; private set; }
     public int RemainingCellsToWin { get => _totalCells - _numMines - _revealedCells; }
-    public Cell[,] Cells { get => _cells; }
-
-#pragma warning disable CS8618 // initialised on reset every time game scene is loaded
-    private Cell[,] _cells;
+#pragma warning disable CS8618 // Reset and re-initialised every time the GameScene is entered.
+    public Cell[,] Cells { get; private set; }
 #pragma warning restore CS8618
 
     private int _totalCells = 0;
@@ -31,8 +31,7 @@ public class Minefield
         new(-1, 1),  // SW
     };
 
-    #region Public Methods
-    public void Reset(Difficulty difficulty = Difficulty.Easy)
+    public void Reset(Difficulty difficulty)
     {
         InitCellGrid(difficulty);
 
@@ -69,9 +68,7 @@ public class Minefield
     }
 
     public void Lose(Point mineToFlagLocation) { RevealMines(mineToFlagLocation); }
-    #endregion Public Methods
 
-    #region Private Methods
     private void InitCellGrid(Difficulty difficulty)
     {
         switch (difficulty)
@@ -98,12 +95,12 @@ public class Minefield
                 break;
         }
 
-        _cells = new Cell[Height, Width];
+        Cells = new Cell[Height, Width];
         for (byte x = 0; x < Width; x++)
         {
             for (byte y = 0; y < Height; y++)
             {
-                _cells[y, x] = new Cell(x, y);
+                Cells[y, x] = new Cell(x, y);
             }
         }
     }
@@ -151,7 +148,7 @@ public class Minefield
 
     private Cell? GetCellAtPosition(Point gridPos)
     {
-        return IsPointInGridBounds(gridPos) ? _cells[gridPos.Y, gridPos.X] : null;
+        return IsPointInGridBounds(gridPos) ? Cells[gridPos.Y, gridPos.X] : null;
     }
 
     private void SetMineAtPoint(Point mineLocation)
@@ -230,5 +227,4 @@ public class Minefield
 
         if (GetCellAtPosition(mineToFlagLocation) is Cell mineToFlag) { mineToFlag.SetAsRevealedMine(); }
     }
-    #endregion Private Methods
 }
