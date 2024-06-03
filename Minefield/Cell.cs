@@ -48,6 +48,10 @@ public class Cell
 
     public void AddAdjacentMine() => _value = MathHelper.Clamp(_value + 1, 0, (int)CellState.Mine);
 
+    public void RemoveAdjacentMine() => _value = MathHelper.Clamp(_value - 1, 0, (int)CellState.Mine);
+
+    public void SetAsDefault() => _value = (int)CellState.Empty;
+
     public void SetAsMine() => _value = (int)CellState.Mine;
 
     public void Reveal() => State = (CellState)_value;

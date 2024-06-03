@@ -12,11 +12,11 @@ public sealed class MSGame : Game
     public static bool ShouldQuit { get; set; }
     public static Vector2 RequestedWindowSize { get; set; }
     public static Difficulty Difficulty { get; set; } = Difficulty.Easy;
-    public static Texture2D Sprites { get; private set; } // Initialised in LoadContent()
-    public static SpriteFont Font { get; private set; } // Initialised in LoadContent()
+    public static Texture2D Sprites { get; private set; }
+    public static SpriteFont Font { get; private set; }
 
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch; // Initialised in LoadContent()
+    private readonly GraphicsDeviceManager _graphics;
+    private SpriteBatch _spriteBatch;
 
     public MSGame()
     {
@@ -24,11 +24,6 @@ public sealed class MSGame : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         TargetElapsedTime = TimeSpan.FromSeconds(1d / 30d);
-    }
-
-    protected override void Initialize()
-    {
-        base.Initialize();
     }
 
     protected override void LoadContent()
@@ -70,8 +65,7 @@ public sealed class MSGame : Game
 
     private void UpdateInput()
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
-            Keyboard.GetState().IsKeyDown(Keys.Escape)) { ShouldQuit = true; }
+        if (Keyboard.GetState().IsKeyDown(Keys.Escape)) { ShouldQuit = true; }
 
         MouseInput.Update(GraphicsDevice.Viewport.Bounds);
     }

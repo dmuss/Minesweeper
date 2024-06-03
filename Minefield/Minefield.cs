@@ -18,6 +18,7 @@ public class Minefield
     private int _totalCells = 0;
     private int _revealedCells = 0;
     private int _numMines = 0;
+    private bool _isFirstClick = true;
 
     private readonly Point[] _cellNeighbours =
     {
@@ -39,12 +40,25 @@ public class Minefield
         _revealedCells = 0;
 
         SetMines(difficulty);
+
+        _isFirstClick = true;
     }
 
     public CellState? RevealCellAtPosition(Point gridLocation)
     {
         if (GetCellAtPosition(gridLocation) is Cell cell)
         {
+            if (_isFirstClick)
+            {
+                _isFirstClick = false;
+
+                if (cell.IsMine)
+                {
+                    RemoveMineAtPoint(gridLocation);
+                    MoveMineToFirstAvailablePosition();
+                }
+            }
+
             RevealCell(cell);
 
             if (cell.IsEmpty) { FloodReveal(cell); }
@@ -164,6 +178,50 @@ public class Minefield
                 if (GetCellAtPosition(neighbourCoords) is Cell neighbour)
                 {
                     neighbour.AddAdjacentMine();
+                }
+            }
+        }
+    }
+
+    private void RemoveMineAtPoint(Point mineLocation)
+    {
+        if (GetCellAtPosition(mineLocation) is Cell cell)
+        {
+            cell.SetAsDefault();
+
+            foreach (Point dir in _cellNeighbours)
+            {
+                Point neighbourCoords = new(mineLocation.X + dir.X, mineLocation.Y + dir.Y);
+                if (GetCellAtPosition(neighbourCoords) is Cell neighbour)
+                {
+                    if (neighbour.IsMine)
+                    {
+                        cell.AddAdjacentMine();
+                    }
+                    else
+                    {
+                        neighbour.RemoveAdjacentMine();
+                    }
+                }
+            }
+        }
+    }
+
+    private void MoveMineToFirstAvailablePosition()
+    {
+        for (byte y = 0; y < Height; y++)
+        {
+            for (byte x = 0; x < Width; x++)
+            {
+                Point gridPosition = new Point(x, y);
+
+                if (GetCellAtPosition(gridPosition) is Cell cell)
+                {
+                    if (!cell.IsMine)
+                    {
+                        SetMineAtPoint(gridPosition);
+                        return;
+                    }
                 }
             }
         }
