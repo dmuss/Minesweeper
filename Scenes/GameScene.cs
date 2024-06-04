@@ -36,7 +36,7 @@ public class GameScene : BaseScene
     {
         _minefield.Reset(MSGame.Difficulty);
 
-        MSGame.RequestedWindowSize = new(_minefield.Width * Cell.SizeInPixels, _minefield.Height * Cell.SizeInPixels);
+        MSGame.RequestedWindowSize = new(_minefield.GridWidth * Cell.SizeInPixels, _minefield.GridHeight * Cell.SizeInPixels);
 
         base.Enter();
     }
