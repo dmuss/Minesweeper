@@ -187,7 +187,7 @@ public class Minefield
     {
         if (GetCellAtPosition(mineLocation) is Cell cell)
         {
-            cell.SetAsDefault();
+            cell.SetAsEmpty();
 
             foreach (Point dir in _cellNeighbours)
             {
@@ -240,11 +240,11 @@ public class Minefield
 
         visited.Add(cell);
 
-        if (cell.IsHidden) { RevealCell(cell); }
+        if (cell.IsNotRevealed) { RevealCell(cell); }
 
         foreach (Point dir in _cellNeighbours)
         {
-            Point neighbourLocation = new(cell.X + dir.X, cell.Y + dir.Y);
+            Point neighbourLocation = new(cell.MinefieldPos.X + dir.X, cell.MinefieldPos.Y + dir.Y);
             if (GetCellAtPosition(neighbourLocation) is Cell neighbour)
             {
                 RecurseFloodReveal(neighbour, visited);
@@ -258,10 +258,10 @@ public class Minefield
         {
             foreach (Point dir in _cellNeighbours)
             {
-                Point neighbourLocation = new(visitedCell.X + dir.X, visitedCell.Y + dir.Y);
+                Point neighbourLocation = new(visitedCell.MinefieldPos.X + dir.X, visitedCell.MinefieldPos.Y + dir.Y);
                 if (GetCellAtPosition(neighbourLocation) is Cell neighbour)
                 {
-                    if (!visited.Contains(neighbour) && neighbour.IsHidden)
+                    if (!visited.Contains(neighbour) && neighbour.IsNotRevealed)
                     {
                         RevealCell(neighbour);
                     }

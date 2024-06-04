@@ -18,9 +18,11 @@ public class GameScene : BaseScene
     {
         _cellSpriteRects = new();
         const byte textureRectSize = 26;
-        for (byte y = 0; y < 2; y++)
+        const byte numCellSpriteRows = 2;
+        const byte numCellSpriteColumns = 7;
+        for (byte y = 0; y < numCellSpriteRows; y++)
         {
-            for (byte x = 0; x < 7; x++)
+            for (byte x = 0; x < numCellSpriteColumns; x++)
             {
                 Rectangle rect = new(x * textureRectSize, y * textureRectSize, textureRectSize, textureRectSize);
                 _cellSpriteRects.Add(rect);
@@ -34,7 +36,7 @@ public class GameScene : BaseScene
     {
         _minefield.Reset(MSGame.Difficulty);
 
-        MSGame.RequestedWindowSize = new(_minefield.Width * Cell.Size, _minefield.Height * Cell.Size);
+        MSGame.RequestedWindowSize = new(_minefield.Width * Cell.SizeInPixels, _minefield.Height * Cell.SizeInPixels);
 
         base.Enter();
     }
@@ -64,8 +66,8 @@ public class GameScene : BaseScene
 
         if (_playing)
         {
-            Point minefieldPos = new((int)MathF.Floor(MouseInput.Position.X / Cell.Size),
-                                     (int)MathF.Floor(MouseInput.Position.Y / Cell.Size));
+            Point minefieldPos = new((int)MathF.Floor(MouseInput.Position.X / Cell.SizeInPixels),
+                                     (int)MathF.Floor(MouseInput.Position.Y / Cell.SizeInPixels));
 
             if (MouseInput.LeftClick)
             {
