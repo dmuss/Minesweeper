@@ -69,7 +69,7 @@ public class GameScene : BaseScene
             Point minefieldPos = new((int)MathF.Floor(MouseInput.Position.X / Cell.SizeInPixels),
                                      (int)MathF.Floor(MouseInput.Position.Y / Cell.SizeInPixels));
 
-            if (MouseInput.LeftClick)
+            if (MouseInput.LeftButtonClicked)
             {
                 if (_minefield.RevealCellAtPosition(minefieldPos) is CellState state && state == CellState.Mine)
                 {
@@ -78,11 +78,11 @@ public class GameScene : BaseScene
                 }
             }
 
-            if (MouseInput.RightClick) { _minefield.FlagCellAtPosition(minefieldPos); }
+            if (MouseInput.RightButtonClicked) { _minefield.FlagCellAtPosition(minefieldPos); }
         }
         else
         {
-            if (MouseInput.LeftClick || MouseInput.RightClick)
+            if (MouseInput.LeftButtonClicked || MouseInput.RightButtonClicked)
             {
                 SceneManager.SwitchScene(Scenes.MainMenu);
             }
