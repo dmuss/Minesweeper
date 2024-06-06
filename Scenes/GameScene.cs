@@ -8,34 +8,28 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minesweeper;
 
-/// <summary>
-/// The playable game scene.
-/// </summary>
 public class GameScene : BaseScene
 {
-    /// <summary>
-    /// The source rectangles for individual sprites on the spritesheet.
-    /// </summary>
-    private readonly List<Rectangle> _cellSpriteRects;
+    private readonly List<Rectangle> _cellSpriteSourceRects;
     private readonly Minefield _minefield;
     private bool _playing = true;
 
     public GameScene()
     {
-        _cellSpriteRects = new();
+        _cellSpriteSourceRects = new();
         const byte textureRectSize = 26;
         const byte numCellSpriteRows = 2;
         const byte numCellSpriteColumns = 7;
 
         // Individual cell sprites are laid out left-to-right, beginning at the top-left of the spritesheet.
-        // When a cell is revealed, the underlying integral value of its `State` is used as an index to
+        // When a cell is revealed, the underlying integral value of its <c>State</c> is used as an index to
         // _cellSpriteRects so that the proper sprite is displayed. This loop sets up the readonly list.
         for (byte y = 0; y < numCellSpriteRows; y++)
         {
             for (byte x = 0; x < numCellSpriteColumns; x++)
             {
                 Rectangle rect = new(x * textureRectSize, y * textureRectSize, textureRectSize, textureRectSize);
-                _cellSpriteRects.Add(rect);
+                _cellSpriteSourceRects.Add(rect);
             }
         }
 
@@ -106,7 +100,7 @@ public class GameScene : BaseScene
         {
             spriteBatch.Draw(texture: MSGame.Sprites,
                              destinationRectangle: cell.Rect,
-                             sourceRectangle: _cellSpriteRects[(int)cell.State],
+                             sourceRectangle: _cellSpriteSourceRects[(int)cell.State],
                              color: Color.White);
         }
     }

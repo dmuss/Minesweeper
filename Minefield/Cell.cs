@@ -34,12 +34,12 @@ public class Cell
     #region Rendering
     /// <summary>
     /// The size in pixels to render individual cells on the minefield. Used to determine the size of the
-    /// rendered `Rectangle` of a given cell, as well as adjust window size for different difficulties.
+    /// rendered <c>Rectangle</c> of a given cell, as well as adjust window size for different difficulties.
     /// </summary>
     public static int SizeInPixels { get; } = 50;
 
     /// <summary>
-    /// The `Rectangle` of this cell to be used to render itself as part of the minefield.
+    /// The <c>Rectangle</c> of this cell to be used to render itself as part of the minefield.
     /// </summary>
     public Rectangle Rect { get; init; }
     #endregion Rendering
@@ -53,7 +53,7 @@ public class Cell
 
     /// <summary>
     /// The underlying integral value of the cell, regardless of whether it's unrevealed, flagged, or questioned.
-    /// When revealed, this value is used to determine which value of the `CellState` enum should be assigned to
+    /// When revealed, this value is used to determine which value of the <c>CellState</c> enum should be assigned to
     /// the cell, which is used to determine the correct source rectangle in the spritesheet.
     /// </summary>
     private byte _value;
@@ -66,13 +66,13 @@ public class Cell
     }
 
     /// <summary>
-    /// When a mine is found adjacent to this cell, increase it's underlying value by one, clamping
+    /// When a mine is found adjacent to this cell, increase its underlying value by one, clamping
     /// the result from [0-9].
     /// </summary>
     public void AddAdjacentMine() => _value = (byte)MathHelper.Clamp(_value + 1, 0, (byte)CellState.Mine);
 
     /// <summary>
-    /// When a mine is removed adjacent to this cell, decrease it's underlying value by one, clamping
+    /// When a mine is removed adjacent to this cell, decrease its underlying value by one, clamping
     /// the result from [0-9].
     /// </summary>
     public void RemoveAdjacentMine() => _value = (byte)MathHelper.Clamp(_value - 1, 0, (byte)CellState.Mine);
@@ -87,7 +87,7 @@ public class Cell
     /// </summary>
     /// <exception cref="ArgumentException">
     /// Underlying values are clamped, but in the case that the revealed cell's underlying
-    /// integral value is not defined in the `CellState` enum, throw an exception and crash out.
+    /// integral value is not defined in the <c>CellState</c> enum, throw an exception and crash out.
     /// </exception>
     public void Reveal()
     {

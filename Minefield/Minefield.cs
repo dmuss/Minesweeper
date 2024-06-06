@@ -40,7 +40,7 @@ public class Minefield
     };
 
     /// <summary>
-    /// Resets the minefield by reinitializing the cell grid with a new minefield
+    /// Resets the minefield by reinitialising the cell grid with a new minefield
     /// and resetting all underlying state.
     /// </summary>
     /// <param name="difficulty">
@@ -66,7 +66,7 @@ public class Minefield
     /// The location of the cell to be revealed.
     /// </param>
     /// <returns>
-    /// Returns the nullable `CellState` of the cell at `gridLocation`, if any.
+    /// Returns the nullable <c>CellState</c> of the cell at <paramref name="gridPosition">, if any.
     /// </returns>
     public CellState? RevealCellAtPosition(Point gridPosition)
     {
@@ -98,7 +98,7 @@ public class Minefield
     }
 
     /// <summary>
-    /// Changes the state of a valid unrevealed cell so the player can flag cell's as suspected
+    /// Changes the state of a valid unrevealed cell so the player can flag that cell as suspected
     /// mine or a questioned mine.
     /// </summary>
     /// <param name="gridPosition">
@@ -122,7 +122,9 @@ public class Minefield
     /// When the player loses (i.e. reveals a cell that is a mine), flag that cell as
     /// a revealed mine and reveal the remaining mines on the minefield.
     /// </summary>
-    /// <param name="mineToFlagLocation"></param>
+    /// <param name="mineToFlagLocation">
+    /// Location of the cell to be flagged as the revealed mine.
+    /// </param>
     public void Lose(Point mineToFlagLocation) { RevealMines(mineToFlagLocation); }
 
     /// <summary>
@@ -217,13 +219,13 @@ public class Minefield
     }
 
     /// <summary>
-    /// Validates that a requested cell at the provided position is valid, and returns it.
+    /// Validates that a requested cell at the provided position exists, and returns it.
     /// </summary>
     /// <param name="gridPosition">
     /// The position of the requested cell.
     /// </param>
     /// <returns>
-    /// Returns a reference to the requested cell if it is valid, otherwise returns `null`.
+    /// Returns a reference to the requested cell if it is valid, otherwise returns <c>null</c>.
     /// </returns>
     private Cell? GetCellAtPosition(Point gridPosition)
     {
@@ -231,8 +233,8 @@ public class Minefield
     }
 
     /// <summary>
-    /// Sets the cell at a requested location as a mine, if that position is valid given the
-    /// current size of the minefield and adjusts the value of it's neighbouring cells.
+    /// Sets the cell at a requested location as a mine if that position is valid given the
+    /// current size of the minefield and adjusts the value of its neighbouring cells.
     /// </summary>
     /// <param name="mineLocation">
     /// The location in the minefield to set as a mine.
@@ -256,8 +258,8 @@ public class Minefield
     }
 
     /// <summary>
-    /// Sets the cell at a requested location as empty, if that position is valid given the
-    /// current size of the minefield and adjusts the value of it's neighbouring cells.
+    /// Sets the cell at a requested location as empty if that position is valid given the
+    /// current size of the minefield and adjusts the value of its neighbouring cells.
     /// </summary>
     /// <param name="mineLocation">
     /// The location in the minefield to set as a mine.
@@ -272,7 +274,7 @@ public class Minefield
             {
                 Point neighbourCoords = new(mineLocation.X + dir.X, mineLocation.Y + dir.Y);
 
-                // If the new cell's neighbour is a mine, it's underlying integral value needs
+                // If the new cell's neighbour is a mine, its underlying integral value needs
                 // to be increased, otherwise decrease each neighbour's underlying integral
                 // value. 
                 if (GetCellAtPosition(neighbourCoords) is Cell neighbour)
