@@ -6,6 +6,9 @@ namespace Minesweeper;
 
 public enum Scenes { MainMenu, Game };
 
+/// <summary>
+/// Controls and updates the current game scene.
+/// </summary>
 public static class SceneManager
 {
     private static Dictionary<Scenes, BaseScene> _scenes = new();

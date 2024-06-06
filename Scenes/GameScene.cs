@@ -8,8 +8,14 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Minesweeper;
 
+/// <summary>
+/// The playable game scene.
+/// </summary>
 public class GameScene : BaseScene
 {
+    /// <summary>
+    /// The source rectangles for individual sprites on the spritesheet.
+    /// </summary>
     private readonly List<Rectangle> _cellSpriteRects;
     private readonly Minefield _minefield;
     private bool _playing = true;
@@ -20,6 +26,10 @@ public class GameScene : BaseScene
         const byte textureRectSize = 26;
         const byte numCellSpriteRows = 2;
         const byte numCellSpriteColumns = 7;
+
+        // Individual cell sprites are laid out left-to-right, beginning at the top-left of the spritesheet.
+        // When a cell is revealed, the underlying integral value of its `State` is used as an index to
+        // _cellSpriteRects so that the proper sprite is displayed. This loop sets up the readonly list.
         for (byte y = 0; y < numCellSpriteRows; y++)
         {
             for (byte x = 0; x < numCellSpriteColumns; x++)
@@ -80,7 +90,7 @@ public class GameScene : BaseScene
 
             if (MouseInput.RightButtonClicked) { _minefield.FlagCellAtPosition(minefieldPos); }
         }
-        else
+        else // Player has either won or lost and the game is over.
         {
             if (MouseInput.LeftButtonClicked || MouseInput.RightButtonClicked)
             {
