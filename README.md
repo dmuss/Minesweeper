@@ -1,5 +1,5 @@
 # Minesweeper
-A classic minesweeper game with three levels of difficulty. Attempt to clear the minefield by revealing all non-mine cells.
+A classic minesweeper game with three levels of difficulty created in [MonoGame](https://monogame.net/). Attempt to clear the minefield by revealing all non-mine cells.
 
 ## Rules
 The game is won when all non-mine cells have been revealed. The player loses if they reveal a mine.
@@ -28,10 +28,18 @@ The game window can be closed through operating system controls, or by pressing 
 
 ## Getting the Game
 
+### Requirements
+
+This game requires support for at least OpenGL 2.0 with the ARB_framebuffer_object extension (or alternatively at least OpenGL 3.0) and supports:
+- Windows 8.1 and up
+- macOS Catalina 10.15 and up
+- 64-bit Linux 
+
 ### Download a Release
 
+Self-contained releases are available for download for Windows, macOS, and Linux. Extract the archived folder and run the `Minesweeper` executable.
 
 
 ### Build it Yourself
 
-If you have installed the [.NET Framework](https://dotnet.microsoft.com/en-us/download), this project can be built using most default commands in your build tool of choice. Note that `Debug` builds allows the use of the `F12` key to reveal the minefield and any point and "win" the game.
+If you have installed the [.NET Framework](https://dotnet.microsoft.com/en-us/download), this project can be built and run using most default commands in your build tool of choice. Note that `Debug` builds allows the use of the `F12` key to reveal the minefield and any point and "win" the game.
