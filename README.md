@@ -32,12 +32,11 @@ The game window can be closed through operating system controls, or by pressing 
 
 This game requires support for at least OpenGL 2.0 with the ARB_framebuffer_object extension (or alternatively at least OpenGL 3.0) and supports:
 - Windows 8.1 and up
-- macOS Catalina 10.15 and up
 - 64-bit Linux 
 
 ### Download a Release
 
-Self-contained releases are available for download for Windows, macOS, and Linux. Extract the archived folder and run the `Minesweeper` executable.
+Self-contained releases are available for download for Windows and Linux. Extract the archived folder and run the `Minesweeper` executable.
 
 
 ### Build it Yourself

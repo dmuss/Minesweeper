@@ -1,0 +1,60 @@
+name: Create release with assets
+
+on:
+    push:
+        tags:
+            - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+    release:
+        name: Build and Create Release
+        strategy:
+          matrix:
+            kind: ['linux', 'windows']
+            include:
+              - kind: linux
+                os: ubuntu-latest
+                target: linux-x64
+              - kind: windows
+                os: windows-latest
+                target: win-x64
+        runs-on: ${{ matrix.os }}
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Build Project
+              env:
+                DOTNET_TOOLS_ALLOW_MANIFEST_IN_ROOT: true
+              shell: bash
+              run: |
+                # Install MGCB.
+                dotnet tool install --create-manifest-if-needed dotnet-mgcb
+
+                # Define some variables for creating artifacts.
+                tag=$(git describe --tags --abbrev=0)
+                release_name="Minesweeper-$tag-${{matrix.target}}"
+
+
+                # Build the game.
+                dotnet publish Minesweeper.csproj -c Release -r "${{ matrix.target }}" -p:PublishReadyToRun=false -p:TieredCompilation=false -p:DebugType=None -p:DebugSymbols=false --self-contained -o "$release_name"
+
+                # Zip artifacts.
+                if [ "${{ matrix.target }}" == "win-x64" ]; then
+                  7z a -tzip "${release_name}.zip" "./${release_name}/*"
+                else
+                  tar czvf "${release_name}.tar.gz" "$release_name"
+                fi
+
+                # Remove artifact directory.
+                rm -r "$release_name"
+
+            - name: Create Release
+              uses: softprops/action-gh-release@v2
+              with:
+                files: Minesweeper-*.*
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
